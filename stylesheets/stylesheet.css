@@ -368,7 +368,10 @@ Full-Width Styles
   background: #212121;
 }
 
-
+table, th, td
+{
+border: 0px;
+}
 
 /*******************************************************************************
 Small Device Styles
