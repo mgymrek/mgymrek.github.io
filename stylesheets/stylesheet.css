@@ -360,6 +360,8 @@ Full-Width Styles
 
 #main_content {
   padding-top: 40px;
+  clear: left;
+  padding: 20px;
 }
 
 #footer_wrap {
