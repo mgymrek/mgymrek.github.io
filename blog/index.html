@@ -1,0 +1,33 @@
+---
+---
+<!DOCTYPE html>
+<html>
+  {% include header.html %}
+  <body>
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+	<h2>Python</h2>
+	<ul>
+	  {% for post in site.categories.python %}
+	  <li>
+	    <a href="{{ post.url }}">{{ post.title }}</a> (Posted {{ post.date }})
+	  </li>
+	  {% endfor %}
+	</ul>
+	
+	<h2>Running</h2>
+	<ul>
+	  {% for post in site.categories.running %}
+	  <li>
+	    <a href="{{ post.url }}">{{ post.title }}</a> (Posted {{ post.date }})
+	    <p>
+	      {{ post.excerpt }}...
+	  </li>
+	  {% endfor %}
+	</ul>
+      </section>
+    </div>
+    {% include footer.html %}
+  </body>
+</html>
+
