@@ -169,7 +169,7 @@ For each table:
 
 * Parse the pandas data frame into a list of rows, where each row is a list of elements. Use the docx library to write this as a table to a word file.
 
-There were quite a few minor details to work out, but basically that's how it works! Happy to hear about potential improvements. On the wishlist for now is the ability to customize the Word document format better (font face, size, table formats, etc.).
+There were quite a few minor details to work out, but basically that's how it works! Happy to hear about potential improvements. On the wishlist for now is the ability to customize the Word document format better (font face, size, table formats, etc.). And possibly to make an IPython extension for this sort of thing if I'm really ambitious.
 
 # Appendix: Pro Tips #
 
