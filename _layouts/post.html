@@ -5,9 +5,13 @@
     <div id="main_content_wrap" class="outer">
       <section id="main_content" class="inner">
 	<h3>{{ page.title }}</h3>
+	<a href="{{ page.url }}#disqus_thread">Comments</a>
+	
 	{{content}}
+	{% include media.html %}
       </section>
-    </div>
-{% include footer.html %}
+    </div>    
+    {% include footer.html %}
+    
   </body>
 </html>
