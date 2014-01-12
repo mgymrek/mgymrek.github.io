@@ -1,0 +1,425 @@
+---
+layout: post
+title: Formatted tables in IPython
+published: true
+tags: python utils ipynb
+categories: python
+date: 2014-01-12 00:14:00
+---
+<style type="text/css">
+table, th, td {
+border: 1px solid black;
+}
+sup {
+font-size: 75%;
+line-height: 0;
+position: relative;
+vertical-align: baseline;
+}
+sup {
+top: -0.5em;
+}
+</style>
+
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>This post is available as an <a href="https://gist.github.com/mgymrek/8388937">IPython notebook</a> on Github Gist, or on <a href="http://nbviewer.ipython.org/gist/mgymrek/8388937">nbviewer</a>.</p>
+<p>I've been working on making presentations in IPython lately. I often end up using tables in my presentations and publications, and wanted a way to format them nicely from IPython notebooks. So I added the PrettyTable class, along with some basic themes, to <a href="https://github.com/mgymrek/ipywidgets">my fork of ipywidgets</a>. This allows for easily formatting the way tables are displayed. This is similar in spirit to the <a href="http://github.com/epmoyer/ipy_table/">ipy_table</a> repository, but with more modular themes and the ability to add any property to tables that you can do with CSS.</p>
+<h1 id="getting-started">Getting started</h1>
+<p>Here's an example of how it works to get started. To create a PrettyTable, import ipywidgets and pass a pandas data frame:</p>
+</div>
+<div class="cell border-box-sizing code_cell vbox">
+<div class="input hbox">
+<div class="prompt input_prompt">
+In&nbsp;[1]:
+</div>
+<div class="input_area box-flex1">
+<div class="highlight"><pre><span class="kn">from</span> <span class="nn">ipywidgets</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="kn">as</span> <span class="nn">pd</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s">&quot;x&quot;</span><span class="p">:[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">],</span> <span class="s">&quot;y&quot;</span><span class="p">:[</span><span class="mi">6</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">3</span><span class="p">],</span> <span class="s">&quot;z&quot;</span><span class="p">:[</span><span class="s">&quot;testing&quot;</span><span class="p">,</span><span class="s">&quot;pretty&quot;</span><span class="p">,</span><span class="s">&quot;tables&quot;</span><span class="p">],</span> <span class="s">&quot;f&quot;</span><span class="p">:[</span><span class="mf">0.023432</span><span class="p">,</span> <span class="mf">0.234321</span><span class="p">,</span><span class="mf">0.5555</span><span class="p">]})</span>
+<span class="n">pt</span> <span class="o">=</span> <span class="n">PrettyTable</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+<span class="n">pt</span>
+</pre></div>
+
+</div>
+</div>
+
+<div class="vbox output_wrapper">
+<div class="output vbox">
+
+
+<div class="hbox output_area"><div class="prompt output_prompt">
+    Out[1]:</div>
+<div class="box-flex1 output_subarea output_pyout">
+
+<div class="output_html rendered_html">
+<table style=""><tr style=""><td style="">f</td><td style="">x</td><td style="">y</td><td style="">z</td></tr><tr style=""><td style="">0.023432</td><td style="">1</td><td style="">6</td><td style="">testing</td></tr><tr style=""><td style="">0.234321</td><td style="">2</td><td style="">4</td><td style="">pretty</td></tr><tr style=""><td style="">0.5555</td><td style="">3</td><td style="">3</td><td style="">tables</td></tr></table>
+</div>
+
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>We can make it a little bit prettier by giving it a style theme and centering the table:</p>
+</div>
+<div class="cell border-box-sizing code_cell vbox">
+<div class="input hbox">
+<div class="prompt input_prompt">
+In&nbsp;[2]:
+</div>
+<div class="input_area box-flex1">
+<div class="highlight"><pre><span class="n">pt</span> <span class="o">=</span> <span class="n">PrettyTable</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">tstyle</span><span class="o">=</span><span class="n">TableStyle</span><span class="p">(</span><span class="n">theme</span><span class="o">=</span><span class="s">&quot;theme1&quot;</span><span class="p">),</span> <span class="n">center</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="n">pt</span>
+</pre></div>
+
+</div>
+</div>
+
+<div class="vbox output_wrapper">
+<div class="output vbox">
+
+
+<div class="hbox output_area"><div class="prompt output_prompt">
+    Out[2]:</div>
+<div class="box-flex1 output_subarea output_pyout">
+
+<div class="output_html rendered_html">
+<center><table style="color: black;border: 1px solid black;"><tr style="color: black;border: 1px solid black;"><td style="color: black;font-weight: bold;background-color: lightgray;">f</td><td style="color: black;font-weight: bold;background-color: lightgray;">x</td><td style="color: black;font-weight: bold;background-color: lightgray;">y</td><td style="color: black;font-weight: bold;background-color: lightgray;">z</td></tr><tr style="color: black;border: 1px solid black;"><td style="color: black;border: 1px solid black;">0.023432</td><td style="color: black;border: 1px solid black;">1</td><td style="color: black;border: 1px solid black;">6</td><td style="color: black;border: 1px solid black;">testing</td></tr><tr style="color: black;border: 1px solid black;"><td style="color: black;border: 1px solid black;">0.234321</td><td style="color: black;border: 1px solid black;">2</td><td style="color: black;border: 1px solid black;">4</td><td style="color: black;border: 1px solid black;">pretty</td></tr><tr style="color: black;border: 1px solid black;"><td style="color: black;border: 1px solid black;">0.5555</td><td style="color: black;border: 1px solid black;">3</td><td style="color: black;border: 1px solid black;">3</td><td style="color: black;border: 1px solid black;">tables</td></tr></table></center>
+</div>
+
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>There are many options for formatting and styling, described below.</p>
+</div>
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1 id="setting-cell-styles">Setting cell styles</h1>
+<p>You can set cell styles by passing <code>PrettyTable.set_cell_style</code> a <code>CellStyle</code> object, or by specifying CSS properties. You can tell <code>set_cell_style</code> a specific set of rows and columns to apply the style to with the arguments <code>rows=</code> and <code>cols=</code>. Or leave those arguments blank to apply to all rows/columns:</p>
+</div>
+<div class="cell border-box-sizing code_cell vbox">
+<div class="input hbox">
+<div class="prompt input_prompt">
+In&nbsp;[3]:
+</div>
+<div class="input_area box-flex1">
+<div class="highlight"><pre><span class="c"># Set cell style using a CellStyle object</span>
+<span class="n">pt</span> <span class="o">=</span> <span class="n">PrettyTable</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">tstyle</span><span class="o">=</span><span class="n">TableStyle</span><span class="p">(</span><span class="n">theme</span><span class="o">=</span><span class="s">&quot;theme1&quot;</span><span class="p">),</span> <span class="n">center</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="n">cs</span> <span class="o">=</span> <span class="n">CellStyle</span><span class="p">()</span>
+<span class="n">cs</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s">&quot;background-color&quot;</span><span class="p">,</span> <span class="s">&quot;red&quot;</span><span class="p">)</span>
+<span class="n">cs</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s">&quot;color&quot;</span><span class="p">,</span> <span class="s">&quot;white&quot;</span><span class="p">)</span>
+<span class="n">pt</span><span class="o">.</span><span class="n">set_cell_style</span><span class="p">(</span><span class="n">style</span><span class="o">=</span><span class="n">cs</span><span class="p">)</span>
+<span class="n">pt</span>
+</pre></div>
+
+</div>
+</div>
+
+<div class="vbox output_wrapper">
+<div class="output vbox">
+
+
+<div class="hbox output_area"><div class="prompt output_prompt">
+    Out[3]:</div>
+<div class="box-flex1 output_subarea output_pyout">
+
+<div class="output_html rendered_html">
+<center><table style="color: black;border: 1px solid black;"><tr style="color: black;border: 1px solid black;"><td style="color: black;font-weight: bold;background-color: lightgray;">f</td><td style="color: black;font-weight: bold;background-color: lightgray;">x</td><td style="color: black;font-weight: bold;background-color: lightgray;">y</td><td style="color: black;font-weight: bold;background-color: lightgray;">z</td></tr><tr style="color: black;border: 1px solid black;"><td style="color: white;background-color: red;">0.023432</td><td style="color: white;background-color: red;">1</td><td style="color: white;background-color: red;">6</td><td style="color: white;background-color: red;">testing</td></tr><tr style="color: black;border: 1px solid black;"><td style="color: white;background-color: red;">0.234321</td><td style="color: white;background-color: red;">2</td><td style="color: white;background-color: red;">4</td><td style="color: white;background-color: red;">pretty</td></tr><tr style="color: black;border: 1px solid black;"><td style="color: white;background-color: red;">0.5555</td><td style="color: white;background-color: red;">3</td><td style="color: white;background-color: red;">3</td><td style="color: white;background-color: red;">tables</td></tr></table></center>
+</div>
+
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell vbox">
+<div class="input hbox">
+<div class="prompt input_prompt">
+In&nbsp;[4]:
+</div>
+<div class="input_area box-flex1">
+<div class="highlight"><pre><span class="c"># Only for a subset of rows/columns</span>
+<span class="n">pt</span> <span class="o">=</span> <span class="n">PrettyTable</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">tstyle</span><span class="o">=</span><span class="n">TableStyle</span><span class="p">(</span><span class="n">theme</span><span class="o">=</span><span class="s">&quot;theme1&quot;</span><span class="p">),</span> <span class="n">center</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="n">cs</span> <span class="o">=</span> <span class="n">CellStyle</span><span class="p">()</span>
+<span class="n">cs</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s">&quot;background-color&quot;</span><span class="p">,</span> <span class="s">&quot;red&quot;</span><span class="p">)</span>
+<span class="n">cs</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s">&quot;color&quot;</span><span class="p">,</span> <span class="s">&quot;white&quot;</span><span class="p">)</span>
+<span class="n">pt</span><span class="o">.</span><span class="n">set_cell_style</span><span class="p">(</span><span class="n">style</span><span class="o">=</span><span class="n">cs</span><span class="p">,</span> <span class="n">rows</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">],</span> <span class="n">cols</span><span class="o">=</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+<span class="n">pt</span>
+</pre></div>
+
+</div>
+</div>
+
+<div class="vbox output_wrapper">
+<div class="output vbox">
+
+
+<div class="hbox output_area"><div class="prompt output_prompt">
+    Out[4]:</div>
+<div class="box-flex1 output_subarea output_pyout">
+
+<div class="output_html rendered_html">
+<center><table style="color: black;border: 1px solid black;"><tr style="color: black;border: 1px solid black;"><td style="color: black;font-weight: bold;background-color: lightgray;">f</td><td style="color: black;font-weight: bold;background-color: lightgray;">x</td><td style="color: black;font-weight: bold;background-color: lightgray;">y</td><td style="color: black;font-weight: bold;background-color: lightgray;">z</td></tr><tr style="color: black;border: 1px solid black;"><td style="color: black;border: 1px solid black;">0.023432</td><td style="color: black;border: 1px solid black;">1</td><td style="color: black;border: 1px solid black;">6</td><td style="color: black;border: 1px solid black;">testing</td></tr><tr style="color: black;border: 1px solid black;"><td style="color: black;border: 1px solid black;">0.234321</td><td style="color: black;border: 1px solid black;">2</td><td style="color: white;background-color: red;">4</td><td style="color: black;border: 1px solid black;">pretty</td></tr><tr style="color: black;border: 1px solid black;"><td style="color: black;border: 1px solid black;">0.5555</td><td style="color: black;border: 1px solid black;">3</td><td style="color: white;background-color: red;">3</td><td style="color: black;border: 1px solid black;">tables</td></tr></table></center>
+</div>
+
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell vbox">
+<div class="input hbox">
+<div class="prompt input_prompt">
+In&nbsp;[5]:
+</div>
+<div class="input_area box-flex1">
+<div class="highlight"><pre><span class="c"># Set styles using keywords (these are all CSS properties, just replace &quot;-&quot; with &quot;_&quot;)</span>
+<span class="n">pt</span> <span class="o">=</span> <span class="n">PrettyTable</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">tstyle</span><span class="o">=</span><span class="n">TableStyle</span><span class="p">(</span><span class="n">theme</span><span class="o">=</span><span class="s">&quot;theme1&quot;</span><span class="p">),</span> <span class="n">center</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="n">pt</span><span class="o">.</span><span class="n">set_cell_style</span><span class="p">(</span><span class="n">font_weight</span><span class="o">=</span><span class="s">&quot;bold&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s">&quot;purple&quot;</span><span class="p">,</span> <span class="n">background_color</span><span class="o">=</span><span class="s">&quot;yellow&quot;</span><span class="p">,</span> <span class="n">rows</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">cols</span><span class="o">=</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">])</span>
+<span class="n">pt</span>
+</pre></div>
+
+</div>
+</div>
+
+<div class="vbox output_wrapper">
+<div class="output vbox">
+
+
+<div class="hbox output_area"><div class="prompt output_prompt">
+    Out[5]:</div>
+<div class="box-flex1 output_subarea output_pyout">
+
+<div class="output_html rendered_html">
+<center><table style="color: black;border: 1px solid black;"><tr style="color: black;border: 1px solid black;"><td style="color: black;font-weight: bold;background-color: lightgray;">f</td><td style="color: black;font-weight: bold;background-color: lightgray;">x</td><td style="color: black;font-weight: bold;background-color: lightgray;">y</td><td style="color: black;font-weight: bold;background-color: lightgray;">z</td></tr><tr style="color: black;border: 1px solid black;"><td style="color: black;border: 1px solid black;">0.023432</td><td style="color: black;border: 1px solid black;">1</td><td style="color: black;border: 1px solid black;">6</td><td style="color: black;border: 1px solid black;">testing</td></tr><tr style="color: black;border: 1px solid black;"><td style="color: black;border: 1px solid black;">0.234321</td><td style="color: black;border: 1px solid black;">2</td><td style="color: purple;font-weight: bold;background-color: yellow;">4</td><td style="color: purple;font-weight: bold;background-color: yellow;">pretty</td></tr><tr style="color: black;border: 1px solid black;"><td style="color: black;border: 1px solid black;">0.5555</td><td style="color: black;border: 1px solid black;">3</td><td style="color: black;border: 1px solid black;">3</td><td style="color: black;border: 1px solid black;">tables</td></tr></table></center>
+</div>
+
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>You can do the same thing for row/header styles using <code>set_row_header_style</code> and <code>set_col_header_style</code> (and <code>set_corner_style</code> for the awkward corner cell in the case of both row and column headings). Use the <code>indices=</code> argument to only apply to certain headings.</p>
+</div>
+<div class="cell border-box-sizing code_cell vbox">
+<div class="input hbox">
+<div class="prompt input_prompt">
+In&nbsp;[6]:
+</div>
+<div class="input_area box-flex1">
+<div class="highlight"><pre><span class="n">pt</span> <span class="o">=</span> <span class="n">PrettyTable</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">tstyle</span><span class="o">=</span><span class="n">TableStyle</span><span class="p">(</span><span class="n">theme</span><span class="o">=</span><span class="s">&quot;theme1&quot;</span><span class="p">),</span> <span class="n">center</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">header_row</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="n">pt</span><span class="o">.</span><span class="n">set_row_header_style</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="s">&quot;blue&quot;</span><span class="p">)</span>
+<span class="n">pt</span><span class="o">.</span><span class="n">set_col_header_style</span><span class="p">(</span><span class="n">background_color</span><span class="o">=</span><span class="s">&quot;white&quot;</span><span class="p">,</span> <span class="n">font_weight</span><span class="o">=</span><span class="s">&quot;bold&quot;</span><span class="p">,</span> <span class="n">indices</span><span class="o">=</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+<span class="n">pt</span><span class="o">.</span><span class="n">set_corner_style</span><span class="p">(</span><span class="n">background_color</span><span class="o">=</span><span class="s">&quot;red&quot;</span><span class="p">)</span>
+<span class="n">pt</span>
+</pre></div>
+
+</div>
+</div>
+
+<div class="vbox output_wrapper">
+<div class="output vbox">
+
+
+<div class="hbox output_area"><div class="prompt output_prompt">
+    Out[6]:</div>
+<div class="box-flex1 output_subarea output_pyout">
+
+<div class="output_html rendered_html">
+<center><table style="color: black;border: 1px solid black;"><tr style="color: black;border: 1px solid black;"><td style="background-color: red;"></td><td style="color: black;font-weight: bold;background-color: lightgray;">f</td><td style="color: black;font-weight: bold;background-color: lightgray;">x</td><td style="font-weight: bold;background-color: white;">y</td><td style="color: black;font-weight: bold;background-color: lightgray;">z</td></tr><tr style="color: black;border: 1px solid black;"><td style="color: blue;">0</td><td style="color: black;border: 1px solid black;">0.023432</td><td style="color: black;border: 1px solid black;">1</td><td style="color: black;border: 1px solid black;">6</td><td style="color: black;border: 1px solid black;">testing</td></tr><tr style="color: black;border: 1px solid black;"><td style="color: blue;">1</td><td style="color: black;border: 1px solid black;">0.234321</td><td style="color: black;border: 1px solid black;">2</td><td style="color: black;border: 1px solid black;">4</td><td style="color: black;border: 1px solid black;">pretty</td></tr><tr style="color: black;border: 1px solid black;"><td style="color: blue;">2</td><td style="color: black;border: 1px solid black;">0.5555</td><td style="color: black;border: 1px solid black;">3</td><td style="color: black;border: 1px solid black;">3</td><td style="color: black;border: 1px solid black;">tables</td></tr></table></center>
+</div>
+
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Sometimes you may just want to <em>update</em> the style of a cell, rather than starting over. There are also functions to do this. They behave the same way as the &quot;set style&quot; functions described above, except they just add to the existing style:</p>
+</div>
+<div class="cell border-box-sizing code_cell vbox">
+<div class="input hbox">
+<div class="prompt input_prompt">
+In&nbsp;[7]:
+</div>
+<div class="input_area box-flex1">
+<div class="highlight"><pre><span class="n">pt</span> <span class="o">=</span> <span class="n">PrettyTable</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">tstyle</span><span class="o">=</span><span class="n">TableStyle</span><span class="p">(</span><span class="n">theme</span><span class="o">=</span><span class="s">&quot;theme1&quot;</span><span class="p">),</span> <span class="n">center</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">header_row</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="n">pt</span><span class="o">.</span><span class="n">set_cell_style</span><span class="p">(</span><span class="n">font_weight</span><span class="o">=</span><span class="s">&quot;bold&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s">&quot;purple&quot;</span><span class="p">,</span> <span class="n">background_color</span><span class="o">=</span><span class="s">&quot;yellow&quot;</span><span class="p">,</span> <span class="n">rows</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">cols</span><span class="o">=</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">])</span>
+<span class="n">pt</span><span class="o">.</span><span class="n">update_cell_style</span><span class="p">(</span><span class="n">background_color</span><span class="o">=</span><span class="s">&quot;pink&quot;</span><span class="p">,</span> <span class="n">rows</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">cols</span><span class="o">=</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span>
+<span class="n">pt</span><span class="o">.</span><span class="n">update_row_header_style</span><span class="p">(</span><span class="n">background_color</span><span class="o">=</span><span class="s">&quot;blue&quot;</span><span class="p">,</span> <span class="n">indices</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="n">pt</span><span class="o">.</span><span class="n">update_col_header_style</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="s">&quot;red&quot;</span><span class="p">)</span>
+<span class="n">pt</span><span class="o">.</span><span class="n">update_corner_style</span><span class="p">(</span><span class="n">background_color</span><span class="o">=</span><span class="s">&quot;purple&quot;</span><span class="p">)</span>
+<span class="n">pt</span>
+</pre></div>
+
+</div>
+</div>
+
+<div class="vbox output_wrapper">
+<div class="output vbox">
+
+
+<div class="hbox output_area"><div class="prompt output_prompt">
+    Out[7]:</div>
+<div class="box-flex1 output_subarea output_pyout">
+
+<div class="output_html rendered_html">
+<center><table style="color: black;border: 1px solid black;"><tr style="color: black;border: 1px solid black;"><td style="background-color: purple;"></td><td style="color: red;font-weight: bold;background-color: lightgray;">f</td><td style="color: red;font-weight: bold;background-color: lightgray;">x</td><td style="color: red;font-weight: bold;background-color: lightgray;">y</td><td style="color: red;font-weight: bold;background-color: lightgray;">z</td></tr><tr style="color: black;border: 1px solid black;"><td style="color: black;font_weight: bold;background-color: blue;">0</td><td style="color: black;border: 1px solid black;">0.023432</td><td style="color: black;border: 1px solid black;">1</td><td style="color: black;border: 1px solid black;">6</td><td style="color: black;border: 1px solid black;">testing</td></tr><tr style="color: black;border: 1px solid black;"><td style="color: black;font_weight: bold;background-color: lightgray;">1</td><td style="color: black;border: 1px solid black;">0.234321</td><td style="color: black;border: 1px solid black;">2</td><td style="color: purple;font-weight: bold;background-color: yellow;">4</td><td style="color: purple;font-weight: bold;background-color: pink;">pretty</td></tr><tr style="color: black;border: 1px solid black;"><td style="color: black;font_weight: bold;background-color: lightgray;">2</td><td style="color: black;border: 1px solid black;">0.5555</td><td style="color: black;border: 1px solid black;">3</td><td style="color: black;border: 1px solid black;">3</td><td style="color: black;border: 1px solid black;">tables</td></tr></table></center>
+</div>
+
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Finally, there are a set of &quot;reset style&quot; functions to reset the styles of cells, headings, and corner cells.</p>
+</div>
+<div class="cell border-box-sizing code_cell vbox">
+<div class="input hbox">
+<div class="prompt input_prompt">
+In&nbsp;[8]:
+</div>
+<div class="input_area box-flex1">
+<div class="highlight"><pre><span class="n">pt</span> <span class="o">=</span> <span class="n">PrettyTable</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">tstyle</span><span class="o">=</span><span class="n">TableStyle</span><span class="p">(</span><span class="n">theme</span><span class="o">=</span><span class="s">&quot;theme1&quot;</span><span class="p">),</span> <span class="n">center</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">header_row</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="n">pt</span><span class="o">.</span><span class="n">set_cell_style</span><span class="p">(</span><span class="n">font_weight</span><span class="o">=</span><span class="s">&quot;bold&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s">&quot;purple&quot;</span><span class="p">,</span> <span class="n">background_color</span><span class="o">=</span><span class="s">&quot;yellow&quot;</span><span class="p">,</span> <span class="n">rows</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">cols</span><span class="o">=</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">])</span>
+<span class="n">pt</span><span class="o">.</span><span class="n">reset_cell_style</span><span class="p">(</span><span class="n">rows</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">cols</span><span class="o">=</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+<span class="n">pt</span><span class="o">.</span><span class="n">reset_row_header_style</span><span class="p">(</span><span class="n">indices</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+<span class="n">pt</span><span class="o">.</span><span class="n">reset_col_header_style</span><span class="p">()</span>
+<span class="n">pt</span>
+</pre></div>
+
+</div>
+</div>
+
+<div class="vbox output_wrapper">
+<div class="output vbox">
+
+
+<div class="hbox output_area"><div class="prompt output_prompt">
+    Out[8]:</div>
+<div class="box-flex1 output_subarea output_pyout">
+
+<div class="output_html rendered_html">
+<center><table style="color: black;border: 1px solid black;"><tr style="color: black;border: 1px solid black;"><td style=""></td><td style="">f</td><td style="">x</td><td style="">y</td><td style="">z</td></tr><tr style="color: black;border: 1px solid black;"><td style="color: black;font_weight: bold;background-color: lightgray;">0</td><td style="color: black;border: 1px solid black;">0.023432</td><td style="color: black;border: 1px solid black;">1</td><td style="color: black;border: 1px solid black;">6</td><td style="color: black;border: 1px solid black;">testing</td></tr><tr style="color: black;border: 1px solid black;"><td style="">1</td><td style="color: black;border: 1px solid black;">0.234321</td><td style="color: black;border: 1px solid black;">2</td><td style="">4</td><td style="color: purple;font-weight: bold;background-color: yellow;">pretty</td></tr><tr style="color: black;border: 1px solid black;"><td style="color: black;font_weight: bold;background-color: lightgray;">2</td><td style="color: black;border: 1px solid black;">0.5555</td><td style="color: black;border: 1px solid black;">3</td><td style="color: black;border: 1px solid black;">3</td><td style="color: black;border: 1px solid black;">tables</td></tr></table></center>
+</div>
+
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1 id="setting-cell-formats">Setting cell formats</h1>
+<p>You can also pass the functions shown above an argument <code>format_function</code>, which will tell the PrettyTable how to display the data. By default, it will call the <code>str</code> of each method. For instance, maybe you have a column of floats you want rounded to 3 decimal places, and another column you'd like to have in scientific notation:</p>
+</div>
+<div class="cell border-box-sizing code_cell vbox">
+<div class="input hbox">
+<div class="prompt input_prompt">
+In&nbsp;[9]:
+</div>
+<div class="input_area box-flex1">
+<div class="highlight"><pre><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s">&quot;FloatColumn&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.0324234</span><span class="p">,</span> <span class="mf">0.23432111</span><span class="p">,</span> <span class="mf">0.555555</span><span class="p">],</span> <span class="s">&quot;SciNotColumn&quot;</span><span class="p">:[</span><span class="mf">1e10</span><span class="p">,</span> <span class="mf">4.232e-6</span><span class="p">,</span> <span class="mf">53e-8</span><span class="p">]})</span>
+<span class="n">pt</span> <span class="o">=</span> <span class="n">PrettyTable</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">tstyle</span><span class="o">=</span><span class="n">TableStyle</span><span class="p">(</span><span class="n">theme</span><span class="o">=</span><span class="s">&quot;theme1&quot;</span><span class="p">),</span> <span class="n">center</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="n">pt</span><span class="o">.</span><span class="n">set_cell_style</span><span class="p">(</span><span class="n">cols</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">format_function</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="s">&quot;</span><span class="si">%.3f</span><span class="s">&quot;</span><span class="o">%</span><span class="k">x</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">SciNot</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="n">xx</span> <span class="o">=</span> <span class="s">&quot;</span><span class="si">%.2E</span><span class="s">&quot;</span><span class="o">%</span><span class="k">x</span>
+    <span class="n">base</span><span class="p">,</span> <span class="n">exp</span> <span class="o">=</span> <span class="n">xx</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&quot;E&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="s">&quot;</span><span class="si">%s</span><span class="s"> &amp;times; 10&lt;sup&gt;</span><span class="si">%s</span><span class="s">&lt;/sup&gt;&quot;</span><span class="o">%</span><span class="p">(</span><span class="n">base</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">exp</span><span class="p">))</span>
+<span class="n">pt</span><span class="o">.</span><span class="n">set_cell_style</span><span class="p">(</span><span class="n">cols</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">format_function</span><span class="o">=</span><span class="n">SciNot</span><span class="p">)</span>
+<span class="n">pt</span>
+</pre></div>
+
+</div>
+</div>
+
+<div class="vbox output_wrapper">
+<div class="output vbox">
+
+
+<div class="hbox output_area"><div class="prompt output_prompt">
+    Out[9]:</div>
+<div class="box-flex1 output_subarea output_pyout">
+
+<div class="output_html rendered_html">
+<center><table style="color: black;border: 1px solid black;"><tr style="color: black;border: 1px solid black;"><td style="color: black;font-weight: bold;background-color: lightgray;">FloatColumn</td><td style="color: black;font-weight: bold;background-color: lightgray;">SciNotColumn</td></tr><tr style="color: black;border: 1px solid black;"><td style="">0.032</td><td style="">1.00 &times; 10<sup>10</sup></td></tr><tr style="color: black;border: 1px solid black;"><td style="">0.234</td><td style="">4.23 &times; 10<sup>-6</sup></td></tr><tr style="color: black;border: 1px solid black;"><td style="">0.556</td><td style="">5.30 &times; 10<sup>-7</sup></td></tr></table></center>
+</div>
+
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1 id="styles">Styles</h1>
+<p>This section shows the insides of how the styling is set up. All of the styling is based on CSS. The major class is <code>CellStyle</code>. Every time you call a function to modify the style of a part of the table, it is modifying the CellStyle of specific cells.</p>
+<p>``` class CellStyle(object): &quot;&quot;&quot; Styles for cells PrettyTable &quot;&quot;&quot;</p>
+<pre><code>def __init__(self):
+    self.style_elements = {} # dictionary of CSS property -&gt; value
+    self.format_function = None
+
+def set(self, key, value):
+    self.style_elements[key] = value
+
+def css(self):
+    style = &quot;&quot;
+    for key in self.style_elements:
+        style += &quot;%s: %s;&quot;%(key, self.style_elements[key])
+    return style
+
+def column_format(self, x):
+    if self.format_function is None: return str(x)
+    else: return self.format_function(x)
+
+def copy(self):
+    c = CellStyle()
+    c.style_elements = self.style_elements.copy()
+    c.format_function = self.format_function
+    return c</code></pre>
+<p><code>This basically stores a dictionary of CSS properties and values, and a function for how to format the data in cells. By using</code>set(key, value)<code>, you can pass any CSS property.The function</code>css()``` converts the style elements to CSS that can be used to style tables.</p>
+<p>The wrapper class <code>TableStyle</code> keeps track of separate styles for cells and headings. It also has some preset themes (which I will add to as I need other themes).</p>
+<pre><code>class TableStyle(object):
+    &quot;&quot;&quot;
+    Keep track of styles for cells/headers in PrettyTable
+    &quot;&quot;&quot;
+    def __init__(self, theme=None):
+        self.row_head_style = CellStyle()
+        self.col_head_style = CellStyle()
+        self.cell_style = CellStyle()
+        self.corner_style = CellStyle()
+
+        # add themes as needed
+        if theme == &quot;basic&quot;:
+            ...
+
+        if theme == &quot;theme1&quot;:
+            ...
+</code></pre>
+<p>Of course all the properties can be customized, as shown above.</p>
+</div>
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1 id="conclusion">Conclusion</h1>
+<p>I plan to add themes to this as I go along, and welcome new additions. The main reason I made this class of tables was so I could use them to animate tables in my presentations, which I describe in my next post.</p>
+</div>
