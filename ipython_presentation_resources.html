@@ -2,7 +2,8 @@
 layout: post
 title: Resources for IPython presentations
 ---
-
+<p>
+A list of useful IPython tools I've made/compiled from other people that I use in my IPython presentations.
 <h3>Formatted tables</h3>
 <ul>
   <li><a href="http://melissagymrek.com/python/2014/01/12/ipython-tables.html">Formatted tables in IPython</a></li>
@@ -13,7 +14,8 @@ title: Resources for IPython presentations
 For these I have forked the <a href="">ipywidgets</a> github repository and added my own useful widgets for animation.
 <ul>
   <li><a href="http://melissagymrek.com/python/2013/12/13/ipython-presentations-build-figures.html">Adding animated figures to IPython presentations</a></li>
-  <li><a href="http://melissagymrek.com/python/2014/01/13/ipython-presentations-build-tables.html">Adding animated tables to IPython presentations</a></li>
+  <li><a href="http://melissagymrek.com/python/2014/01/13/ipython-presentations-build-tables.html">Adding
+  animated tables to IPython presentations (post coming soon)</a></li>
 </ul>
 
 <h3>Templates</h3>
@@ -44,8 +46,7 @@ ipython nbconvert my_slides.ipynb --to slides --template my_template
 
 <h3>Other useful functions</h3>
 
-<ul>
-<li><b>Center a figure</b></li>
+<h4>Center a figure</h4>
 {% highlight python %}
 import matplotlib.pyplot
 import rpy2.robjects
@@ -58,6 +59,9 @@ def center_figure(fig):
     matplotlib.pyplot.close(fig)
     return IPython.core.display.HTML('<center><img src="data:Image/png;base64,{0}"></center>'.format(png_rep.encode('base64')))
 {% endhighlight %}
-</ul>
 
 <h3>Example</h3>
+Here's an example <a href="example-slideshow.slides.html">slideshow</a> showing these features, and
+the <a href="https://github.com/mgymrek/mgymrek.github.io/blob/master/example-slideshow.ipynb">ipynb
+  file</a> used to generate it (make sure the "Cell Toolbar" is set to
+"Slideshow").
