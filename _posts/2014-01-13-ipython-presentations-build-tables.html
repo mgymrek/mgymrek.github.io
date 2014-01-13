@@ -1,0 +1,140 @@
+---
+layout: post
+title: Adding animated tables to IPython presentations
+published: true
+tags: python utils ipynb
+categories: python
+date: 2014-01-13 00:15:00
+---
+
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Available as a <a href="https://gist.github.com/mgymrek/8404670">github gist</a></p>
+<p>A couple weeks ago, I made a small class to <a href="http://melissagymrek.com/python/2013/12/13/ipython-presentations-build-figures.html">create animated build figures for IPython presentations</a>. This a short addendum to that post, this time with animated tables instead of figures. These draw on the <a href="http://melissagymrek.com/python/2014/01/12/ipython-tables.html">formatted IPython tables</a> that I posted yesterday.</p>
+<p>The idea here is same with the figures: often when you are presenting a figure or table, using animation to slowly build it up helps you tell the story in a more organized way. Powerpoint is full of options to do this, but I would like to do it programatically in Python.</p>
+<p>The goal of the animated tables is to make a widget that takes in a formatted table and a list of functions to apply to the table With each click, it applies the next function in succession. This is best illustrated with a short example:</p>
+</div>
+<div class="cell border-box-sizing code_cell vbox">
+<div class="input hbox">
+<div class="prompt input_prompt">
+In&nbsp;[6]:
+</div>
+<div class="input_area box-flex1">
+<div class="highlight"><pre><span class="kn">import</span> <span class="nn">pandas</span> <span class="kn">as</span> <span class="nn">pd</span>
+<span class="kn">from</span> <span class="nn">ipywidgets</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="c"># Create a data frame that we will make into a table</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s">&quot;x&quot;</span><span class="p">:[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">],</span> <span class="s">&quot;y&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">9</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">7</span><span class="p">],</span> <span class="s">&quot;x&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span><span class="mf">0.2</span><span class="p">,</span><span class="mf">0.3</span><span class="p">]})</span>
+<span class="n">df</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="p">[</span><span class="s">&quot;row1&quot;</span><span class="p">,</span> <span class="s">&quot;row2&quot;</span><span class="p">,</span> <span class="s">&quot;row3&quot;</span><span class="p">]</span>
+
+<span class="c"># Make a PrettyTable out of it</span>
+<span class="n">pt</span> <span class="o">=</span> <span class="n">PrettyTable</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">tstyle</span><span class="o">=</span><span class="n">TableStyle</span><span class="p">(</span><span class="n">theme</span><span class="o">=</span><span class="s">&quot;theme1&quot;</span><span class="p">),</span> <span class="n">center</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">header_col</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">header_row</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+<span class="c">#### Functions for animation ###</span>
+<span class="c"># Highlight second row</span>
+<span class="k">def</span> <span class="nf">f1</span><span class="p">(</span><span class="n">pt</span><span class="p">):</span>
+    <span class="n">pt</span><span class="o">.</span><span class="n">update_cell_style</span><span class="p">(</span><span class="n">rows</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">background_color</span><span class="o">=</span><span class="s">&quot;yellow&quot;</span><span class="p">,</span> <span class="n">font_weight</span><span class="o">=</span><span class="s">&quot;bold&quot;</span><span class="p">)</span>
+
+<span class="c"># Make the font in the top right corner red</span>
+<span class="k">def</span> <span class="nf">f2</span><span class="p">(</span><span class="n">pt</span><span class="p">):</span>
+    <span class="n">pt</span><span class="o">.</span><span class="n">update_cell_style</span><span class="p">(</span><span class="n">rows</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">cols</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s">&quot;red&quot;</span><span class="p">)</span>
+    
+<span class="c"># Make a ststic build table</span>
+<span class="c"># pass it the PrettyTable, and the list of functions to apply</span>
+<span class="n">StaticBuildTable</span><span class="p">(</span><span class="n">pt</span><span class="p">,</span> <span class="p">[</span><span class="n">f1</span><span class="p">,</span> <span class="n">f2</span><span class="p">])</span>
+</pre></div>
+
+</div>
+</div>
+
+<div class="vbox output_wrapper">
+<div class="output vbox">
+
+
+<div class="hbox output_area"><div class="prompt output_prompt">
+    Out[6]:</div>
+<div class="box-flex1 output_subarea output_pyout">
+
+<div class="output_html rendered_html">
+
+    <style>
+    *:focus {
+     outline:none;
+    }
+    </style>
+    <script type="text/javascript">
+    function ProgressForward(div){
+    var control = div.getElementsByTagName("input")[0];
+    var outputs = div.getElementsByTagName("div");
+    control.value = parseInt(control.value) + 1;
+    if (control.value >= outputs.length - 1) {
+        control.value = outputs.length - 2;
+    }
+    for(i=0; i<outputs.length; i++){
+        var name = outputs[i].getAttribute("name");
+        if(name == "name" + control.value){
+            outputs[i].style.display = 'block';
+        } else if (name != "control"){
+            outputs[i].style.display = 'none'
+        }
+    }
+    }
+    
+    function ProgressBackward(div){
+    var control = div.getElementsByTagName("input")[0];
+    var outputs = div.getElementsByTagName("div");
+    control.value = parseInt(control.value) - 1;
+    if (control.value <= 0) {
+        control.value=0;
+    }
+    for(i=0; i<outputs.length; i++){
+        var name = outputs[i].getAttribute("name");
+        if(name == "name" + control.value){
+            outputs[i].style.display = 'block';
+        } else if (name != "control"){
+            outputs[i].style.display = 'none'
+        }
+    }
+    }
+    
+    // Use "a" to go forward, "r" to go back. Or click to progress
+    function HandleKey(div){
+    var key = window.event.keyCode;
+    if (key == 65) {
+       ProgressForward(div);
+    }
+    if (key == 82) {
+       ProgressBackward(div);
+    }
+    }
+    </script>
+    <div name="control" onclick="ProgressForward(this.parentNode);return false;" onkeyup="HandleKey(this.parentNode);" tabindex="0">
+      
+    <div name="name0" style="display:block">
+      <center><table style="color: black;border: 1px solid black;"><tr style="color: black;border: 1px solid black;"><td style=""></td><td style="color: black;font-weight: bold;background-color: lightgray;">x</td><td style="color: black;font-weight: bold;background-color: lightgray;">y</td></tr><tr style="color: black;border: 1px solid black;"><td style="color: black;font_weight: bold;background-color: lightgray;">row1</td><td style="color: black;border: 1px solid black;">0.1</td><td style="color: black;border: 1px solid black;">9.0</td></tr><tr style="color: black;border: 1px solid black;"><td style="color: black;font_weight: bold;background-color: lightgray;">row2</td><td style="color: black;border: 1px solid black;">0.2</td><td style="color: black;border: 1px solid black;">8.0</td></tr><tr style="color: black;border: 1px solid black;"><td style="color: black;font_weight: bold;background-color: lightgray;">row3</td><td style="color: black;border: 1px solid black;">0.3</td><td style="color: black;border: 1px solid black;">7.0</td></tr></table></center>
+    </div>
+    
+    <div name="name1" style="display:none">
+      <center><table style="color: black;border: 1px solid black;"><tr style="color: black;border: 1px solid black;"><td style=""></td><td style="color: black;font-weight: bold;background-color: lightgray;">x</td><td style="color: black;font-weight: bold;background-color: lightgray;">y</td></tr><tr style="color: black;border: 1px solid black;"><td style="color: black;font_weight: bold;background-color: lightgray;">row1</td><td style="color: black;border: 1px solid black;">0.1</td><td style="color: black;border: 1px solid black;">9.0</td></tr><tr style="color: black;border: 1px solid black;"><td style="color: black;font_weight: bold;background-color: lightgray;">row2</td><td style="color: black;font-weight: bold;border: 1px solid black;background-color: yellow;">0.2</td><td style="color: black;font-weight: bold;border: 1px solid black;background-color: yellow;">8.0</td></tr><tr style="color: black;border: 1px solid black;"><td style="color: black;font_weight: bold;background-color: lightgray;">row3</td><td style="color: black;border: 1px solid black;">0.3</td><td style="color: black;border: 1px solid black;">7.0</td></tr></table></center>
+    </div>
+    
+    <div name="name2" style="display:none">
+      <center><table style="color: black;border: 1px solid black;"><tr style="color: black;border: 1px solid black;"><td style=""></td><td style="color: black;font-weight: bold;background-color: lightgray;">x</td><td style="color: black;font-weight: bold;background-color: lightgray;">y</td></tr><tr style="color: black;border: 1px solid black;"><td style="color: black;font_weight: bold;background-color: lightgray;">row1</td><td style="color: black;border: 1px solid black;">0.1</td><td style="color: red;border: 1px solid black;">9.0</td></tr><tr style="color: black;border: 1px solid black;"><td style="color: black;font_weight: bold;background-color: lightgray;">row2</td><td style="color: black;font-weight: bold;border: 1px solid black;background-color: yellow;">0.2</td><td style="color: black;font-weight: bold;border: 1px solid black;background-color: yellow;">8.0</td></tr><tr style="color: black;border: 1px solid black;"><td style="color: black;font_weight: bold;background-color: lightgray;">row3</td><td style="color: black;border: 1px solid black;">0.3</td><td style="color: black;border: 1px solid black;">7.0</td></tr></table></center>
+    </div>
+    
+      <input type="none" value="0" style="display:none;">
+    </div>
+    
+</div>
+
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Try clicking on the above table to walk through the animation. You can also use &quot;a&quot; and &quot;r&quot; to &quot;(a)dvance&quot; and &quot;(r)everse&quot; the animation.</p>
+<p>You can get these in <a href="https://github.com/mgymrek/ipywidgets">my forked ipywidgets repository</a>. You can see more about fun resources for IPython presentations <a href="http://melissagymrek.com/ipython_presentation_resources.html">here</a>. Finally, to see how this works, you can check out <a href="http://melissagymrek.com/python/2013/12/13/ipython-presentations-build-figures.html">my post on how to do this for figures</a>.</p>
+</div>
+
