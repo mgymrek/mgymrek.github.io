@@ -44,8 +44,7 @@ ipython nbconvert my_slides.ipynb --to slides --template my_template
 
 <h3>Other useful functions</h3>
 
-<ul>
-<li><b>Center a figure</b></li>
+<h4>Center a figure</h4>
 {% highlight python %}
 import matplotlib.pyplot
 import rpy2.robjects
@@ -58,7 +57,6 @@ def center_figure(fig):
     matplotlib.pyplot.close(fig)
     return IPython.core.display.HTML('<center><img src="data:Image/png;base64,{0}"></center>'.format(png_rep.encode('base64')))
 {% endhighlight %}
-</ul>
 
 <h3>Example</h3>
 Here's an example <a href="example-slideshow.slides.html">slideshow</a> showing these features, and
