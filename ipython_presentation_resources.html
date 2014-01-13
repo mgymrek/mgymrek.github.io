@@ -17,3 +17,46 @@ For these I have forked the <a href="">ipywidgets</a> github repository and adde
 </ul>
 
 <h3>Templates</h3>
+
+For many presentations, you may not want the code from input cells to
+be visible. I use the [template posted on @damian_vila's
+blog](http://www.damian.oquanta.info/posts/hide-the-input-cells-from-your-ipython-slides.html). This
+allows you to hide the input slides, but clicking on the output cell
+toggles the input cell. This makes it really fun in presentations, if
+someone asks how you did something, simply click on the figure/table
+to reveal the code!
+
+To use a template to compile your slides:
+<ul>
+<li>Create a directory where you will store your templates</li>
+<li>Add this directory to the list ```c.HTMLExporter.template_path```
+  in ```.ipython/profile_default/ipython_nbconvert_config.py```.</li>
+<li>Use the template when compiling your slides. If you named the
+  tamplate my_template.tpl, and stored it in a directory listed in
+  ```c.HTMLExporter.template_path```, you can do:
+
+```
+ipython nbconvert my_slides.ipynb --to slides --template my_template
+```</li>
+</ul>
+[Read more about IPython configuration](http://ipython.org/ipython-doc/stable/config/overview.html).
+
+<h3>Other useful functions</h3>
+
+<ul>
+<li><b>Center a figure</b></li>
+{% highlight python %}
+import matplotlib.pyplot
+import rpy2.robjects
+import IPython.core.display
+from IPython import get_ipython
+
+def center_figure(fig):
+    ip = get_ipython()
+    png_rep = ip.display_formatter.formatters["image/png"](fig)
+    matplotlib.pyplot.close(fig)
+    return IPython.core.display.HTML('<center><img src="data:Image/png;base64,{0}"></center>'.format(png_rep.encode('base64')))
+{% endhighlight %}
+</ul>
+
+<h3>Example</h3>
