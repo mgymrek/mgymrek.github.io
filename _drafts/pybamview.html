@@ -1,0 +1,201 @@
+---
+layout: post
+title: PyBamView: a web-based BAM alignment viewer
+published: true
+tags: python sequencing utils
+categories: python
+date: 2014-01-29 00:23:00
+---
+
+<b>Summary</b>: below I describe my frustration with current BAM alignment
+viewers for looking at alignments of short reads to regions with
+complex insertions and deletions, such as microsatellites. Then I
+present <a href="http://melissagymrek.com/pybamview/">PyBamView</a>,
+my weekend hack to build a lightweight, web-based alignment viewer
+that provides an easy way to view sequence alignments across multiple
+samples. This was largely inspired by the very basic but great tool,
+<a href="http://samtools.sourceforge.net/tview.shtml">samtools tview</a>, but with some added features and the
+capability to add many more.
+
+This is a taste of what it looks like:
+<img src="TODO:example">
+
+Find out more about PyBamView and the motivation behind it below!
+
+<h2>Motivation, and existing alignment viewers</h2>
+Most of my work during my PhD has focused on analyzing short tandem
+repeats (STRs) from high throughput sequencing data, and applications
+of these loci. These loci are very repetitive with large differences
+from the reference genome, and so can be hard to type. Here's an
+example alignment of a real STR allele compared to the reference
+genome:
+
+<img src="TODO:alignment picture">
+
+<p>
+When I started working on STRs, there was no good tool to genotype
+(determine the number of repeats) at these loci from sequencing
+data. So one of my first projects in the Erlich lab was to develop a
+tool, called <a href="http://jura.wi.mit.edu/erlich/lobSTR/">lobSTR</a> for
+genotyping STRs.
+
+<p>
+One of the main ways of debugging a variant caller is by actually
+going in and looking at the raw read alignments to see if you believe
+the call. Let's see how three widely used genome browser tools
+visualize alignments at STR variants:
+
+<ul>
+<li><b>Integrative Genomics Viewer</b>
+    (<a href="www.broadinstitute.org/igv/">IGV</a>)</li>
+Here are the alignments for two different loci:
+<img src="TODO deletion and insertion">
+<p>
+In the first alignment, the reads indicate a deletion from the
+reference allele. This is indicated with a bar showing a gap in the
+alignment. It's very easy to tell that there's a deletion there.
+<p>
+In the second alignment, the reads indicate an insertion from the
+reference allele. The insertion is shown as a purple bar. By mousing
+over this purple bar, you can see the size of the insertion. Now what
+you can't tell by looking at this is that the alignments here are for
+an individual heterozygous for <em>two different alleles</em>, each of
+which is an insertion compared to the reference genome. Because IGV
+shows a "one size fits all" purple bar for indels, you wouldn't know
+this from glancing at the alignment.
+
+<li><b>UCSC Genome Browser</b> (<a href="http://genome.ucsc.edu/">view
+    here</a>)
+# TODO 
+
+<li><b>Samtools
+    tview</b> (<a href="http://samtools.sourceforge.net/tview.shtml">sourceforge
+    page</a>)</li>
+Now we get to my personal favorite. Samtools tview is a very simple,
+    fast, text-based alignment viewer run straight from the
+    terminal. Just give it your indexed bam file and reference genome,
+    and you get a lovely scrollable alignment. Let's look at how tview
+    visualizes the two loci shown above:
+<img src="TODO samtools tview of the same locus">
+This is exactly what I am looking for in terms of alignment
+visualization. Unlike the other viewers, samtools lets you visualize
+the size of insertions, which it draws as *'s in the reference
+genome. This is apparently very difficult for the other viewers to do,
+since everything is based on the reference track
+(see <a href="https://groups.google.com/forum/#!searchin/igv-help/insertion$20visualization/igv-help/2GUJ0b8uYmc/uiPrVcEkZEQJ">this discussion on the IGV mailing</a> list
+related to this issue.
+<p>
+Because it is so minimal, it is super fast. Just enter the genomic region, snap your fingers, and
+you're there. Unfortunately, that's about all you can do with tview: view an
+alignment from a single bam file. None of the other useful features of
+other browser such as adding more tracks with additional datasets,
+viewing multiplpe alignments/tracks at once, etc.
+</ul>
+
+<p>
+So what I <em><b>really</b></em> want is an alignment viewer that combines
+the feature of samtools tview that I need (namely, good display of
+indels) with some of the features of the more bulky alignment
+viewers. Most importantly, I'd like to be able to view many samples at
+once. Ideally, I'd like to have features allowing me to see metadata
+about reads, and to combine the alignment views with information about
+genotype calls.
+
+<p>
+I cam across <a href="http://plindenbaum.blogspot.com/2013/01/samtools-tview-as-library-to-display-bam.html">this post on extending samtools tview to an
+    HTML viewer</a>, and briefly considered trying to modify the
+    samtools code to add some features. This idea didn't last very
+    long after I forked
+    the <a href="https://github.com/samtools">samtools github
+    repository</a> and found most of the tview code had been
+    temporarily commented out (although it did look like someone was
+    making some efforts to use read groups to look at different
+    samples). Uncommenting the tview code led to compilation errors,
+    and I decided that Heng Li's code is just a bit (a lot?? :) )
+    beyond my comfort level in C. So I decided to see if I could get
+    something simple to work as a Python-based (of course!) web
+    application.
+
+<p>
+Getting something primitive up and running was suprisingly simple. You
+can view the example of what there is so
+far <a href="http://pybamview.melissagymrek.com/?bamfiles=HG00096.chrom20.ILLUMINA.bwa.GBR.low_coverage.20120522.bam&bamfiles=HG00121.chrom20.ILLUMINA.bwa.GBR.low_coverage.20130415.bam&region=20%3A61100">here</a>
+and get download/install/usage information <a href="http://melissagymrek.com/pybamview/">here</a>. I
+have already found this super useful in visualizing our STR calls, and
+it would likely be useful for people whose lives don't revolve around
+STRs as well :).
+
+If you want to hear more about how it works, and what I hope to add in
+the future, keep reading!
+
+<h2>PyBamView: how it works and what it does</h2>
+
+PyBamView is a simple web application for visualizing alignments from
+bam files. You simply supply it with bam files
+on your local computer or server, along with an optional reference
+genome, view the alignments in your web browser. To call it from the
+command line, simply type something like:
+
+{% highlight bash %}
+
+{% end highlight %}
+
+<h3>Flask for simple python web servers</h3>
+PyBamView was built using the
+Python <a href="flask.pocoo.org">Flask</a> library, combined with
+the <a href="http://jinja.pocoo.org/">jinja2</a> template
+engine. Using these tools, it is very easy to create an "application"
+that ties specific python functions to call to generate the HTML (+
+javascript, css, etc.) for specific URLs. For example, I can do
+something like:
+
+{% highlight python %}
+app = Flask(__name__)
+@app.route('/<string:bamfiles>')
+def display_bam(bamfiles):
+  ... do something with bamfiles and generate html...
+{% endhighlight %}
+
+and generate the appropriate HTML using arguments parsed from the URL
+  (in this example, I get the bamfiles from the URL, you can also
+  easily use POST/GET requests).
+
+Using jinja2, I don't have to messily write HTML as strings within
+  python, I can just do the python computations I neeed to get the
+  necessary variables, then feed those to a template. For example, I
+  can make a template like this, say at "index.html":
+
+{% highlight html %}
+<h1>The nucleotide at positions {{ CHROM }}:{{ POS }} is {{ NUC }}</h1>
+{% end highlight %}
+
+then call:
+{% highlight python %}
+app = Flask(__name__)
+@app.route('/<string:bamfiles>')
+def display_bam(bamfiles):
+  ... computation to get chrom, pos, and nuc...
+  return render_template("index.html", CHROM=chrom, POS=pos, NUC=nuc)
+{% endhighlight %}
+
+<h3>Displaying alignments</h3>
+
+<h3>Serving an example on Amazon</h3>
+
+<h2>Future developments</h2>
+
+There are many things on the todo list. On the immediate list to add
+is:
+<ul>
+<li>Highlight base mismatches from the reference genome</li>
+<li>Deal with cases in bam files that aren't dealt with yet (clipping,
+  etc.)</li>
+</ul>
+
+In the more distant future, I'd like to add more ways to visualize
+read metadata (click on a read, see info about it's tags. Also,
+visualization of reads that are apired), and ultimately to add integration with VCF calls.
+
+Of course, if you're interested in some features or would like to
+contribute, or have any feedback at all, please comment below, or
+shoot me an email at (mgymrek AT mit DOT edu).
