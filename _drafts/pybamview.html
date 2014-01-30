@@ -1,36 +1,34 @@
 ---
 layout: post
-title: PyBamView: a web-based BAM alignment viewer
+title: PyBamView - a web-based BAM alignment viewer
 published: true
 tags: python sequencing utils
 categories: python
 date: 2014-01-29 00:23:00
 ---
 
-<b>Summary</b>: below I describe my frustration with current BAM alignment
+<p>
+<strong>Summary</strong>: below I describe my frustration with current BAM alignment
 viewers for looking at alignments of short reads to regions with
 complex insertions and deletions, such as microsatellites. Then I
 present <a href="http://melissagymrek.com/pybamview/">PyBamView</a>,
 my weekend hack to build a lightweight, web-based alignment viewer
 that provides an easy way to view sequence alignments across multiple
-samples. This was largely inspired by the very basic but great tool,
+samples. This was largely inspired by the great but very basic,
 <a href="http://samtools.sourceforge.net/tview.shtml">samtools tview</a>, but with some added features and the
 capability to add many more.
-
+<p>
 This is a taste of what it looks like:
-<img src="TODO:example">
-
+<img src="{{ SITE.URL }}/images/pybamview_example.png">
+<p>
+<h3>Visit the <a href="http://melissagymrek.com/pybamview/" target="_blank">PyBamView website</a></h3>
+<p>
 Find out more about PyBamView and the motivation behind it below!
 
 <h2>Motivation, and existing alignment viewers</h2>
 Most of my work during my PhD has focused on analyzing short tandem
-repeats (STRs) from high throughput sequencing data, and applications
-of these loci. These loci are very repetitive with large differences
-from the reference genome, and so can be hard to type. Here's an
-example alignment of a real STR allele compared to the reference
-genome:
-
-<img src="TODO:alignment picture">
+repeats (STRs) from high throughput sequencing data. STRs are very repetitive with large differences
+from the reference genome, and so can be hard to genotype. The example alignment at the beginning of this page shows a taste of what this can look like: in that image there are several reads showing a 15bp deletion at a (GTTTT) repeat, and one read showing a 10bp insertion.
 
 <p>
 When I started working on STRs, there was no good tool to genotype
@@ -43,13 +41,15 @@ genotyping STRs.
 One of the main ways of debugging a variant caller is by actually
 going in and looking at the raw read alignments to see if you believe
 the call. Let's see how three widely used genome browser tools
-visualize alignments at STR variants:
+visualize alignments at STR variants (this is not a comprehensive list of alignment viewers, just the ones I'm most familiar with.):
 
 <ul>
-<li><b>Integrative Genomics Viewer</b>
+<li><strong>Integrative Genomics Viewer</strong>
     (<a href="www.broadinstitute.org/igv/">IGV</a>)</li>
 Here are the alignments for two different loci:
-<img src="TODO deletion and insertion">
+<p>
+<img src="{{ SITE.URL }}/images/igv_deletion.png" width="600">
+<img src="{{ SITE.URL }}/images/igv_insertion.png" width="600">
 <p>
 In the first alignment, the reads indicate a deletion from the
 reference allele. This is indicated with a bar showing a gap in the
@@ -64,24 +64,32 @@ which is an insertion compared to the reference genome. Because IGV
 shows a "one size fits all" purple bar for indels, you wouldn't know
 this from glancing at the alignment.
 
-<li><b>UCSC Genome Browser</b> (<a href="http://genome.ucsc.edu/">view
+<li><strong>UCSC Genome Browser</strong> (<a href="http://genome.ucsc.edu/">view
     here</a>)
-# TODO 
+<p>
+<img src="{{ SITE.URL }}/images/ucsc_deletion.png" width="600">
+<img src="{{ SITE.URL }}/images/ucsc_insertion.png" width="600">
+<p>
 
-<li><b>Samtools
-    tview</b> (<a href="http://samtools.sourceforge.net/tview.shtml">sourceforge
+Similarly to IGV, here the deletions are nicely displayed in the bams, but the insertions are indicated by a small vertical bar (which is pretty hard to see in the pictures since it's so thin).
+
+<li><strong>Samtools
+    tview</strong> (<a href="http://samtools.sourceforge.net/tview.shtml">sourceforge
     page</a>)</li>
 Now we get to my personal favorite. Samtools tview is a very simple,
     fast, text-based alignment viewer run straight from the
     terminal. Just give it your indexed bam file and reference genome,
     and you get a lovely scrollable alignment. Let's look at how tview
     visualizes the two loci shown above:
-<img src="TODO samtools tview of the same locus">
+<p>
+<img src="{{ SITE.URL }}/images/tview_deletion.png" width="600">
+<img src="{{ SITE.URL }}/images/tview_insertion.png" width="600">
+<p>
 This is exactly what I am looking for in terms of alignment
-visualization. Unlike the other viewers, samtools lets you visualize
+visualization (it looks better in the terminal than it does in the screen shots). Unlike the other viewers, samtools lets you visualize
 the size of insertions, which it draws as *'s in the reference
 genome. This is apparently very difficult for the other viewers to do,
-since everything is based on the reference track
+probably since everything is based on the reference track
 (see <a href="https://groups.google.com/forum/#!searchin/igv-help/insertion$20visualization/igv-help/2GUJ0b8uYmc/uiPrVcEkZEQJ">this discussion on the IGV mailing</a> list
 related to this issue.
 <p>
@@ -92,7 +100,7 @@ other browser such as adding more tracks with additional datasets,
 viewing multiplpe alignments/tracks at once, etc.
 </ul>
 
-<p>
+<h2>PyBamView</h2>
 So what I <em><b>really</b></em> want is an alignment viewer that combines
 the feature of samtools tview that I need (namely, good display of
 indels) with some of the features of the more bulky alignment
@@ -102,7 +110,7 @@ about reads, and to combine the alignment views with information about
 genotype calls.
 
 <p>
-I cam across <a href="http://plindenbaum.blogspot.com/2013/01/samtools-tview-as-library-to-display-bam.html">this post on extending samtools tview to an
+I came across <a href="http://plindenbaum.blogspot.com/2013/01/samtools-tview-as-library-to-display-bam.html">this post on extending samtools tview to an
     HTML viewer</a>, and briefly considered trying to modify the
     samtools code to add some features. This idea didn't last very
     long after I forked
@@ -111,7 +119,7 @@ I cam across <a href="http://plindenbaum.blogspot.com/2013/01/samtools-tview-as-
     temporarily commented out (although it did look like someone was
     making some efforts to use read groups to look at different
     samples). Uncommenting the tview code led to compilation errors,
-    and I decided that Heng Li's code is just a bit (a lot?? :) )
+    and I decided that Heng Li's (amazing) code is just a bit (a lot??)
     beyond my comfort level in C. So I decided to see if I could get
     something simple to work as a Python-based (of course!) web
     application.
@@ -131,14 +139,16 @@ the future, keep reading!
 <h2>PyBamView: how it works and what it does</h2>
 
 PyBamView is a simple web application for visualizing alignments from
-bam files. You simply supply it with bam files
+bam files. You supply it with bam files
 on your local computer or server, along with an optional reference
-genome, view the alignments in your web browser. To call it from the
+genome, then view the alignments in your web browser. To call it from the
 command line, simply type something like:
 
 {% highlight bash %}
+pybamview --bamdir $DIRECTORY_WITH_BAM_FILES --ref $REFERENCE_FASTA 
+{% endhighlight %}
 
-{% end highlight %}
+and go to http://127.0.0.1:5000 in your web browser.
 
 <h3>Flask for simple python web servers</h3>
 PyBamView was built using the
@@ -158,29 +168,14 @@ def display_bam(bamfiles):
 
 and generate the appropriate HTML using arguments parsed from the URL
   (in this example, I get the bamfiles from the URL, you can also
-  easily use POST/GET requests).
-
-Using jinja2, I don't have to messily write HTML as strings within
-  python, I can just do the python computations I neeed to get the
-  necessary variables, then feed those to a template. For example, I
-  can make a template like this, say at "index.html":
-
-{% highlight html %}
-<h1>The nucleotide at positions {{ CHROM }}:{{ POS }} is {{ NUC }}</h1>
-{% end highlight %}
-
-then call:
-{% highlight python %}
-app = Flask(__name__)
-@app.route('/<string:bamfiles>')
-def display_bam(bamfiles):
-  ... computation to get chrom, pos, and nuc...
-  return render_template("index.html", CHROM=chrom, POS=pos, NUC=nuc)
-{% endhighlight %}
+  easily use POST/GET requests). See tons more about this on the Flask site.
 
 <h3>Displaying alignments</h3>
 
-<h3>Serving an example on Amazon</h3>
+Read alignments are parsed from the CIGAR scores from the BAM file and displayed simply as HTML tables. There is a separate table for the reference genome at the top, and for each sample. Each column represents a position in the genome (mouseover a column to see which position it is). Gaps are displayed as "*"'s.
+
+<p>
+It would be pretty inefficient to load the whole human (or other) genome into your web browser, so PyBamView only loads chunks of the genomes at a time on demand. Because the BAM files are indexed, when given a genomic region we can immediately retrieve the reads in that region. This is done using the <a href="https://code.google.com/p/pysam/">pysam</a> library. A buffer of several hundred base pairs around the request region is loaded so you can scroll a little upstream and downstream of the region input to the search bar.
 
 <h2>Future developments</h2>
 
@@ -194,8 +189,9 @@ is:
 
 In the more distant future, I'd like to add more ways to visualize
 read metadata (click on a read, see info about it's tags. Also,
-visualization of reads that are apired), and ultimately to add integration with VCF calls.
-
+visualization of reads that are paired), and ultimately to add integration with calls from VCF files.
+<p>
 Of course, if you're interested in some features or would like to
 contribute, or have any feedback at all, please comment below, or
-shoot me an email at (mgymrek AT mit DOT edu).
+send me an email at (mgymrek AT mit DOT edu).
+<p>
