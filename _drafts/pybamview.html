@@ -10,7 +10,7 @@ date: 2014-01-29 00:23:00
 <p>
 <strong>Summary</strong>: below I describe my frustration with current BAM alignment
 viewers for looking at alignments of short reads to regions with
-complex insertions and deletions, such as microsatellites. Then I
+complex insertions and deletions, such as short tandem repeats. Then I
 present <a href="http://melissagymrek.com/pybamview/">PyBamView</a>,
 my weekend hack to build a lightweight, web-based alignment viewer
 that provides an easy way to view sequence alignments across multiple
@@ -27,12 +27,12 @@ Find out more about PyBamView and the motivation behind it below!
 
 <h2>Motivation, and existing alignment viewers</h2>
 Most of my work during my PhD has focused on analyzing short tandem
-repeats (STRs) from high throughput sequencing data. STRs are very repetitive with large differences
-from the reference genome, and so can be hard to genotype. The example alignment at the beginning of this page shows a taste of what this can look like: in that image there are several reads showing a 15bp deletion at a (GTTTT) repeat, and one read showing a 10bp insertion.
+repeats (STRs) from high throughput sequencing data. STRs are very repetitive and have large length differences
+from the reference genome, and so can be hard to genotype. The example alignment at the beginning of this page shows a taste of what this can look like: in that example there are several reads showing a 15bp deletion at a (GTTTT) repeat, and one read showing a 10bp insertion.
 
 <p>
 When I started working on STRs, there was no good tool to genotype
-(determine the number of repeats) at these loci from sequencing
+(determine the number of repeats) these loci from sequencing
 data. So one of my first projects in the Erlich lab was to develop a
 tool, called <a href="http://jura.wi.mit.edu/erlich/lobSTR/">lobSTR</a> for
 genotyping STRs.
@@ -41,14 +41,15 @@ genotyping STRs.
 One of the main ways of debugging a variant caller is by actually
 going in and looking at the raw read alignments to see if you believe
 the call. Let's see how three widely used genome browser tools
-visualize alignments at STR variants (this is not a comprehensive list of alignment viewers, just the ones I'm most familiar with.):
+visualize alignments at STR variants (this is not a comprehensive list of alignment viewers, or of their features, just the ones I'm most familiar with.):
 
 <ul>
 <li><strong>Integrative Genomics Viewer</strong>
-    (<a href="www.broadinstitute.org/igv/">IGV</a>)</li>
-Here are the alignments for two different loci:
+    (<a href="http://www.broadinstitute.org/igv/">IGV</a>)</li>
+Here are the alignments for two different STR loci:
 <p>
 <img src="{{ SITE.URL }}/images/igv_deletion.png" width="600">
+<p>
 <img src="{{ SITE.URL }}/images/igv_insertion.png" width="600">
 <p>
 In the first alignment, the reads indicate a deletion from the
@@ -93,7 +94,7 @@ probably since everything is based on the reference track
 (see <a href="https://groups.google.com/forum/#!searchin/igv-help/insertion$20visualization/igv-help/2GUJ0b8uYmc/uiPrVcEkZEQJ">this discussion on the IGV mailing</a> list
 related to this issue.
 <p>
-Because it is so minimal, it is super fast. Just enter the genomic region, snap your fingers, and
+Because tview is so minimal, it is super fast. Just enter the genomic region, snap your fingers, and
 you're there. Unfortunately, that's about all you can do with tview: view an
 alignment from a single bam file. None of the other useful features of
 other browser such as adding more tracks with additional datasets,
@@ -126,15 +127,24 @@ I came across <a href="http://plindenbaum.blogspot.com/2013/01/samtools-tview-as
 
 <p>
 Getting something primitive up and running was suprisingly simple. You
-can view the example of what there is so
+can view and play around with the example of what there is so
 far <a href="http://pybamview.melissagymrek.com/?bamfiles=HG00096.chrom20.ILLUMINA.bwa.GBR.low_coverage.20120522.bam&bamfiles=HG00121.chrom20.ILLUMINA.bwa.GBR.low_coverage.20130415.bam&region=20%3A61100">here</a>
-and get download/install/usage information <a href="http://melissagymrek.com/pybamview/">here</a>. I
-have already found this super useful in visualizing our STR calls, and
+and get download/install/usage information <a href="http://melissagymrek.com/pybamview/">here</a>.
+<p>
+And here are the two loci used as examples above:
+<p>
+<img src="{{ SITE.URL }}/images/pybamview_deletion.png" width="600">
+<img src="{{ SITE.URL }}/images/pybamview_insertion.png" width="600">
+<p>
+I have already found this super useful in visualizing our STR calls, and
 it would likely be useful for people whose lives don't revolve around
 STRs as well :).
 
 If you want to hear more about how it works, and what I hope to add in
 the future, keep reading!
+
+<p>
+P.S. I should have timed the process for how long it took me to get each of these running. PyBamView and tview took about 10 seconds each to load from the terminal. IGV and UCSC took <em>much</em> longer (although to be fair my slow internet at home is a lot to blame). Still for UCSC I had to upload my BAM file to a public URL, make a track, and load the page. For IGV, I had to launch IGV, figure out it doesn't work with my Java configuration, download from source, load the reference genome, and load my bam, all of which took much longer than I'm willing to admit.
 
 <h2>PyBamView: how it works and what it does</h2>
 
