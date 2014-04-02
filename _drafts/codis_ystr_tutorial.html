@@ -1,0 +1,74 @@
+---
+layout: post
+title: Using lobSTR to genotype Y-STRs and the CODIS markers
+published: true
+tags: sequencing STRs forensics
+categories: science
+date: 2014-04-10 00:00:00
+---
+<p>
+<strong>Summary:</strong> below I show how to use lobSTR output to
+obtain Y-STR and CODIS genotypes
+<p>
+
+A couple years ago, the Erlich Lab publshed a method
+called <a href="TODO">lobSTR</a> (<a href="TODO">Gymrek et al., Genome Research 2012</a>), which can genotype short tandem
+repeats (STRs) from high throughput sequencing data.  We showed that we can use lobSTR to get high quality genotypes
+for Y-STR markers, which we could then use to infer the surnames of
+and then learn the identities of close to 50 HapMap samples
+(<a href="TODO">Gymrek et al., Science 2013</a>, <a href="TODO">press
+    coverage</a>).
+
+I have received several questions from people that would like to use
+lobSTR to genotype Y-STRs and the CODIS set from sequencing data. Both are useful for identification in forensics settings, and Y-STRs are
+also used in the genetic genealogy community and in population
+genetics. Here I give a short tutorial on how to go from the lobSTR
+VCF output to a list of Y-STR and CODIS genotypes in standard
+nomenclature.
+
+<h2>Preliminaries</h2>
+Before starting this tutorial, you should have
+installed <a href="TODO">lobSTR</a> and downloaded
+the <a href="TODO">hg19 lobSTR index</a>.
+
+The rest of the materials used in this tutorial (raw reads, expected
+output and intermediate files) are avilable <a href="TODO">here</a>. Download these if you'd
+like to follow the example.
+
+<h2>Running lobSTR</h2>
+
+The first step is to use lobSTR to generate a VCF file. The full steps
+for running lobSTR are available on the <a href="TODO">lobSTR
+  website</a>. A quick example for the raw reads available in the
+tutorial materials is below:
+
+{% highlight bash %}
+TODO alignment
+samtools sort example.aligned.bam example.sorted
+samtools index example.sorted.bam
+TODO allelotype
+{% end highlight %}
+
+<h2>Extracting Y-STRs and CODIS</h2>
+lobSTR outputs a VCF file containing STR genotypes. These are given as
+the number of base pairs difference from reference for each genomic
+coordinate, which is not directly comparable to other Y-STR/CODIS panels.
+
+The lobSTR reference was generated using the <a href="TODO">Tandem
+  Repeats Finder</a> tool, but we also manually added several hundred
+  (somewhat manually) annotated loci, including the Y-STRs, CODIS,
+  part of the Marshfield panel, and disease related loci. A list of
+  the Y-STR and CODIS markers included is available on
+  the <a href="TODO">lobSTR site</a>.
+
+<h3>A note about nomenclature</h3>
+<h3>Tricky markers</h3>
+
+
+<h2>Recommended quality filters</h2>
+
+<h2>Conclusion</h2>
+The steps outlined above should get you started generating Y-STR and
+CODIS panels. If you have any questions or would like to discuss this
+further, discussion is welcome on the <a href="TODO">lobSTR user group
+  mailing list</a> (lobstr-user-group@google.com).
