@@ -375,30 +375,34 @@ In&nbsp;[9]:
 <div class="text_cell_render border-box-sizing rendered_html">
 <h1 id="styles">Styles</h1>
 <p>This section shows the insides of how the styling is set up. All of the styling is based on CSS. The major class is <code>CellStyle</code>. Every time you call a function to modify the style of a part of the table, it is modifying the CellStyle of specific cells.</p>
-<p>``` class CellStyle(object): &quot;&quot;&quot; Styles for cells PrettyTable &quot;&quot;&quot;</p>
-<pre><code>def __init__(self):
-    self.style_elements = {} # dictionary of CSS property -&gt; value
-    self.format_function = None
 
-def set(self, key, value):
-    self.style_elements[key] = value
+<pre><code>
+class CellStyle(object): 
+  &quot;&quot;&quot; Styles for cells PrettyTable &quot;&quot;&quot;
+  def __init__(self):
+      self.style_elements = {} # dictionary of CSS property -&gt; value
+      self.format_function = None
 
-def css(self):
-    style = &quot;&quot;
-    for key in self.style_elements:
+  def set(self, key, value):
+      self.style_elements[key] = value
+
+  def css(self):
+      style = &quot;&quot;
+      for key in self.style_elements:
         style += &quot;%s: %s;&quot;%(key, self.style_elements[key])
-    return style
+      return style
 
-def column_format(self, x):
-    if self.format_function is None: return str(x)
-    else: return self.format_function(x)
+  def column_format(self, x):
+      if self.format_function is None: return str(x)
+      else: return self.format_function(x)
 
-def copy(self):
-    c = CellStyle()
-    c.style_elements = self.style_elements.copy()
-    c.format_function = self.format_function
-    return c</code></pre>
-<p><code>This basically stores a dictionary of CSS properties and values, and a function for how to format the data in cells. By using</code>set(key, value)<code>, you can pass any CSS property.The function</code>css()``` converts the style elements to CSS that can be used to style tables.</p>
+  def copy(self):
+      c = CellStyle()
+      c.style_elements = self.style_elements.copy()
+      c.format_function = self.format_function
+      return c</code></pre>
+<p>
+This basically stores a dictionary of CSS properties and values, and a function for how to format the data in cells. By using <code>set(key, value)</code>, you can pass any CSS property.The function<code>css()</code> converts the style elements to CSS that can be used to style tables.</p>
 <p>The wrapper class <code>TableStyle</code> keeps track of separate styles for cells and headings. It also has some preset themes (which I will add to as I need other themes).</p>
 <pre><code>class TableStyle(object):
     &quot;&quot;&quot;
