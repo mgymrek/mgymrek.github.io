@@ -8,40 +8,65 @@ date: 2014-08-21 00:11:00
 ---
 
 Intro - TODO
+lots of talk about reproducible research:
+  cite nature series, other articles about this, my previous blog post
+
+some papers have started publishing data/code to go with figures and
+analysis (put some examples)
+
+this is the beginning, but not there yet: need a way to make results
+easily reproducible, in a way that others can interact with
+
+outline of what I talk about
+say the goal of providing all the analysis for a paper encapsulated in
+a docker
+say I'd love to have open discussion about this, what would be the
+best way to publish paper like this
 
 <h2>Challenges in providing easily reproducible results</h2>
-cite nature series, other articles about this
+challenges: want to be reproducible, but also that it is *easy* for
+others to reproduce it, else it's not useful and no one will waste
+their time
+burden is on the author to make this easy, not just to hand the
+scripts off and say good luck
+will make for better code, more accountability, and research that is
+more useful to other people
 
 <h2>Using docker for reproducible analyses</h2>
 
-<h2>Challenges</h2>
-
-<h2>Example - reproducing Martin, et al. PLOS Genetics 2014</h2>
-
-<h3>Run the docker yourself</h3>
-
-<h3>How it works</h3>
-
-<h2>Conclusion</h2>
-
-<!--
-Citations:
+say what docker is
+why it can be useful for this: provide an environment where everything
+is already set up. don't send me chasing some obscure libraries,
+etc. can run anywhere
+site: 
 https://bcbio.wordpress.com/2014/03/06/improving-reproducibility-and-installation-of-genomic-analysis-pipelines-with-docker/
 figshare reproducible research pdf
 
-write demo research article (what to write about??)
-each result mouseover and get the make target
-each figure mouseover and see the ipython nb that produces it
-provide data zip and docker
-docker has all the installed code + ipython notebooks
-instructions to run it
+say how I would do it (Github repo for a paper, have Dockerfile there,
+separate data directory)
+makefile to get all results? several options to discuss
 
-Example analysis:
-reproduce bustamante paper: http://www.plosgenetics.org/article/info%3Adoi%2F10.1371%2Fjournal.pgen.1004549
+<h2>Challenges</h2>
+requires that bioinformaticians become knowledgeable in this stuff,
+but that will make us better coders anyway
+really huge datasets that require the cloud - at least provide small examples?
+data access problems - again, provide small examples, separate code
+from the data, ppl want to download data separately anyway
 
-Challenges:
-really huge datasets that require cloud computing?
+<h2>Example - reproducing Martin, et al. PLOS Genetics 2014</h2>
+took as example these guys, give big kudos for putting code/scripts
+online
+still challenges: need to install libraries, code not production
+ready, etc.
+repoduced 2 figures (which ones?)
+here I did rstudio since their code is in R. could do same thing with
+IPython, make file etc.
 
-Other points:
-burden is on the author to make reproducibilty easy, not just to hand scripts and say good luck
--->
+basically, set up a docker to run rstudio, has the code
+loaded. provide separate data dir
+docker set up with all the paths etc. it needs
+
+<h3>Run the docker yourself</h3>
+
+<h2>Conclusion</h2>
+
