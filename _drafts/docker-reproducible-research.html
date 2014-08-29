@@ -6,101 +6,90 @@ tags: science reproducibleresearch
 categories: science
 date: 2014-08-21 00:11:00
 ---
-
+<p>
+<strong>Summary</strong>: 
+Producing reproducible computational analyses is a growing concern. Many scientists are starting to publish their code and data, but it is still a big hassle for other people to reproduce. Docker allows you to publish not only the necessary code and data, but also the exact compute environment used to run all the analyses so they can be rerun with no hassle by someone else. Below I discuss ways Docker could be used to improve research reproducibility.
+<h3>Reproducible research is hard</h3>
 Just open up the Internet and you will see tons of talk about
-#reproducibleresearch: check it out on
-[twitter](https://twitter.com/search?q=%23reproducibleresearch&src=typd),
-[Nature](http://www.nature.com/nature/focus/reproducibility/), all
+reproducible research: check it out on
+<a href="https://twitter.com/search?q=%23reproducibleresearch&src=typd">twitter</a>,
+<a href="http://www.nature.com/nature/focus/reproducibility/">Nature</a>, all
 over the blogosphere, and more than a few genomics startups. Clearly, there is growing concern about how we
 can make our analyses more reliable and transparent.
 <p>
 Encouagingly, some publications are starting to actually publish the
 code and data used for analysis and to generate figures. For example,
-many articles in Nature and in the new [Elife
-journal](http://elifesciences.org/) (and others)
-provide a "source data" download link next to figures. Sometimes Elife
+many articles in Nature and in the new <a href="http://elifesciences.org/">Elife
+journal</a> (and others) provide a "source data" download link next to figures. Sometimes Elife
 might even have an option to download the source code
 for figures. Or even better, some authors are publishing all or most
 of code and data used for anlaysis and figures
-(e.g. [here](http://www.plosgenetics.org/article/info%3Adoi%2F10.1371%2Fjournal.pgen.1004549)
-and [here](http://www.nature.com/nbt/journal/vaop/ncurrent/full/nbt.2972.html)).
+(e.g. <a href="http://www.plosgenetics.org/article/info%3Adoi%2F10.1371%2Fjournal.pgen.1004549">here</a>
+and <a href="http://www.nature.com/nbt/journal/vaop/ncurrent/full/nbt.2972.html">here</a>).
 <p>
-This is a great start, but here's the problem: if I really want to
+This is a great start, but there are still lots of problems: if I really want to
 rerun stuff from these papers, it is actually pretty annoying. I
 download the scripts and data, I realize I don't have all the required
 libraries. Or that it only runs on an Ubuntu version I don't have, or
-some paths are hard-coded to match the authors' machines. If it's not
+some paths are hard-coded to match the authors' machines. <em>If it's not
 easy for me to run and doesn't run "out of the box" the chances that I
-will actually ever run most of these scripts is close to zero.
+will actually ever run most of these scripts is close to zero.</em>
 <p>
 For published code and data to be useful, it not only has to
-be <b>reproducible</b>, but it also has to be <b>easy to reproduce and
-  interact with the data</b>. Otherwise no one will ever touch
-it. Right now, what we are doing is posting our data and messy scripts
-that we got to work for ourselves when the stars were aligned, and
-saying to anyone that wants to reproduce it: "it worked for me, good
+be, but it also has to be <strong>easy to reproduce and
+  interact with the data</strong>. Otherwise no one will ever touch
+it. Right now, we post code and data and say: "it worked for me, good
 luck." But then the burden is on the user to figure out how in the
-world to get this stuff to run. Really, a lot of this burden should be
-on the author if they want anyone to care about or use what they
-published. That will ultimately make for more accountability, better
-code, and result in the research being much more useful to other
-scientists.
+world to get this stuff to run. Really, <strong>a lot of this burden should be
+on the authors if they want anyone to care about or use what they
+published</strong>. 
 <p>
-I recently started experimenting with
-[Docker](https://www.docker.com/), which might have a solution to many
+I recently started experimenting with <a href="https://www.docker.com/">Docker</a>, which might be a solution to many
 of these problems. Basically, it is kind of like a lightweight virtual
 machine where you can set up a compute environment, including all the
 libraries, code, data, you need, in a single "image". That image can
 be distributed publicly and can seamlessly run on theoretically most other
-systems. No need for the user mess with installation, paths, etc. They
+systems. No need for the user to mess with installation, paths, etc. They
 just run the docker you provided, and everything is set up to run out
 of the box. Many others
-(e.g. [here](https://bcbio.wordpress.com/2014/03/06/improving-reproducibility-and-installation-of-genomic-analysis-pipelines-with-docker/)
-and
-[here](http://figshare.com/articles/Using_Docker_to_Support_Reproducible_Research/1101910))
-have already started discussing this.
+(e.g. <a href="https://bcbio.wordpress.com/2014/03/06/improving-reproducibility-and-installation-of-genomic-analysis-pipelines-with-docker/">here</a> and <a href="http://figshare.com/articles/Using_Docker_to_Support_Reproducible_Research/1101910">here</a>) have already started discussing this.
 <p>
-I think it'd be pretty awesome if when we published a paper, we also
+<strong>I think it'd be pretty awesome if when we published a paper, we also
 provide a Docker image that is already set up to run all the analyses
-and recreate all the figures in the study. Below I discuss how to use
+and recreate all the figures in the study</strong>. Below I discuss how to use
 Docker to do this, show an example Docker to reproduce figures from a published
-paper, and talk about what think are the promises and problems with
+paper, and talk about what I think are the promises and problems with
 this approach. I'd love to have a discussion about how people think
 this kind of approach can or cannot solve reproducibility issues.
 
-<h2>Using Docker for reproducible analyses</h2>
+<h3>Using Docker for reproducible analyses</h3>
 Here I want to describe a little bit how the setup works.
-
-Docker has a repository of images called [Docker
-hub](https://hub.docker.com/) that is pretty analagous to
-[github](github.com/) except for Docker images instead of for
-code. You can pull, push, and modify images and share them with other
-people and trace their history. For instance I made an image to run an Rstudio server by
+<p>
+Docker has a repository of images called <a href="https://hub.docker.com/">Docker
+hub</a> that is pretty analagous to <a href="http://github.com">github</a> except it's for Docker images instead of for
+code. You can pull, push, track, and modify images and share them with other
+people. For instance I made an image to run an Rstudio server by
 pulling the base ubuntu:14.04 image, modifying it to include everything
 needed to run Rstudio, and making a new image out of that (which I
-deposited at
-[mgymrek/docker-rstudio-server](https://registry.hub.docker.com/u/mgymrek/docker-rstudio-server/),
-the github repo it's built from is [https://github.com/mgymrek/docker-reproducibility-example](https://github.com/mgymrek/docker-reproducibility-example)). Everything
+deposited at <a href="https://registry.hub.docker.com/u/mgymrek/docker-rstudio-server/">mgymrek/docker-rstudio-server</a>,
+the github repo it's built from is <a href="https://github.com/mgymrek/docker-reproducibility-example">mgymrek/docker-reproducibility-example</a>). Everything
 to build the image is specified in a Dockerfile that you can view
 there, so you know exactly how I created that environment.
 <p>
 A very cool feature is that Docker can link up with your github
 account. So you can make a github repository with a Dockerfile in it
-specifying how to build an image (and maybe add to it some scripts you
-have in that github repository). Docker will automatically detect when
+specifying how to build an image and what scripts to add to it. Docker will automatically detect when
 you change that repository, create a Docker image using the
 instructions in your Dockerfile, and post it as a "trusted
-build". (see [automated
-builds](http://docs.docker.com/docker-hub/builds/)).
+build". (see <a href="http://docs.docker.com/docker-hub/builds/">automated builds</a>).
 <p>
 So my vision of how this would work for a publication is that every
 publication would have its own github repository. There you can store
 all the code you used with version control. You would then include a
 Dockerfile in this repository specifying how to set up the exact
-environment that you used to run that code. Then you would end up with
+environment required. Then you would end up with
 an automatically built docker image on docker hub that anyone can
-download and run in such a way that they see exactly what you saw when
-you ran the analysis.
+download and run out of the box.
 <p>
 When you run a docker container, you can specify a command that it
 should run when you first start it up. (The docker documentation
@@ -111,11 +100,10 @@ them to do any playing around in the shell. For instance, in the
 example below, I set it up so that it automatically runs the web
 browser version of rstudio with all the code and data set up, so that
 all one needs to do is run the docker, go to the web browser, and
-there is all the code and data ready to go in an interactive
-environment.
+start having fun.
 <p>
 But that is only one way to do things. You could do a similar setup
-where you use IPython notebook for instance rather than rstudio. Or
+where you use IPython notebook rather than rstudio. Or
 you could provide one Makefile that will make all of the figures and
 reproduce analyses with a single command. Instead of providing the
 data in the Docker, you can provide the data as a separate download
@@ -125,22 +113,19 @@ data). Below is
 a working example of how I got this to work going the Rstudio route. But there are countless ways to
 set this up and I'd love to discuss different possibilities. 
 
-<h2>Example - reproducing Martin, et al. PLOS Genetics 2014</h2>
+<h3>Example - reproducing Martin, et al. PLOS Genetics 2014</h3>
 I wanted to go through an excercise of how it would actually work to
-provide a Docker to reproduce analyses of a publication. As an example, I am using code and data from [Transcriptome Sequencing
+provide a Docker to reproduce analyses of a publication. As an example, I am using code and data from <a href="http://www.plosgenetics.org/article/info%3Adoi%2F10.1371%2Fjournal.pgen.1004549">Transcriptome Sequencing
 from Diverse Human Populations Reveals Differentiated Regulatory
 Architecture by Martin and Costa
-et
-al.](http://www.plosgenetics.org/article/info%3Adoi%2F10.1371%2Fjournal.pgen.1004549). This
-paper was recently published in PLOS Genetics, and the authors
+et al.</a> recently published in PLOS Genetics. The authors
 published the code and data used for analysis and figures along with
-the manuscript. <b>First of all, I want to give the [Bustamante
-  Lab](http://med.stanford.edu/bustamantelab/) huge kudos for
+the manuscript. <b>First of all, I want to give the <a href="http://med.stanford.edu/bustamantelab/">Bustamante Lab</a> huge kudos for
   this. </b> Although many people are talking about publishing code and data, few people are
   actually providing it, and I was very happy to see this. I also want
 to point out that the code I use in the example below is modified from
 the code they published with the paper, and that I received permission
-from the authors to post this.
+from the authors to post it.
 <p>
 Even though the data and code were provided, it was not immediate
 smooth sailing: the code required many R packages that I do not have
@@ -150,10 +135,8 @@ scripts. But eventually I got the scripts to run with minimal
 modifications, so the figures really were reproducible.
 <p>
 This took a fair amount of fighting and set up time to install all the things I was
-missing. I can bet that almost nobody is going to patient enough to go
-through this process: they'll maybe download the scripts and try
-running them. But once it's not immediate runnable, they will probably
-just give up. But these are exactly the problems that Docker can solve: I
+missing. I can bet that few people are going to be patient enough to go
+through this process. But these are exactly the problems that Docker can solve: I
 can set up this compute environment once, and then provide it to other
 people in such a way that it just runs, almost regardless of what
 computing environment they're using.
@@ -162,23 +145,19 @@ For my example, I chose two supplemental figures from this study
 (Figure S7B and figure S1) and made a Docker that provides everything
 needed to reproduce those in Rstudio. I chose these mostly because they were the
 first scripts I looked at that ran in under a couple minutes and that
-I could clearly tell which figure the scripts belonged to. The Docker
-is loaded with a running installation of [Rstudio
-server](http://www.rstudio.com/products/rstudio/download-server/), and
+I could easily tell which figure the scripts belonged to. The Docker
+is loaded with a running installation of <a href="http://www.rstudio.com/products/rstudio/download-server/">Rstudio server</a>, and
 all the code, data, and dependencies needed to produce those
 figures. Each figure is in a separate script that you can open in
 Rstudio and run out of the box to reproduce what you see in the
 published manuscript.
-<p>
 
-<h3>Run the docker yourself</h3>
+<h4>Run the docker yourself</h4>
 
-First you should make sure you have [Docker](http://docs.docker.com/)
-installed. I assume you have some familiarity with Docker (if not the
+I assume you have some familiarity with <a href="http://docs.docker.com/">Docker</a> and have it installed (if not the
 tutorials on the site are great and show you how much fun it is).
 <p>
-The Docker for this example is published on Docker hub
-([mgymrek/docker-reproducibility-example](https://registry.hub.docker.com/u/mgymrek/docker-reproducibility-example/)).To
+The Docker for this example is published on Docker hub <a href="https://registry.hub.docker.com/u/mgymrek/docker-reproducibility-example/">mgymrek/docker-reproducibility-example</a>. To
 run it, simply run:
 <pre>
 docker run -p 49000:8787 -d mgymrek/docker-reproducibility-example
@@ -186,46 +165,44 @@ docker run -p 49000:8787 -d mgymrek/docker-reproducibility-example
 (You can replace 49000 with another open port if you want.) Navigate
 in your web browser to http://0.0.0.0:49000. This will open up
 rstudio. The username and password are both “guest”. You can open
-files in the <pre>scripts/</pre> directory and run them to reproduce
+files in the <code>scripts/</code> directory and run them to reproduce
 figures S7B and S1 from Martin et al. (martin_etal_figS1.R and
 martin_etal_figS7B.R). Voila, you didn't have to install rstudio, you
 didn't have to install any R packages, you didn't have to configure
-any paths, and it should just work.
+any paths, and it should just work (although this is my first Docker attempt, so give me a break if it doesn't!).
 
-<h3>Notes</h3>
+<h4>Notes</h4>
 <ul>
 <li>
 If you're running on Mac, you should have already installed,
-initialized, and started boot2docker using the instructions
-[here](http://docs.docker.com/installation/mac/). Instructions are the
-same as above, except instead of using "0.0.0.0" as the IP address,
-run:
+initialized, and started <code>boot2docker</code> using the instructions
+<a href="http://docs.docker.com/installation/mac/">here</a>. Instructions are the
+same as above, except instead of using "0.0.0.0" as the IP address, run:
 <pre>
 boot2docker ip
 </pre>
 to get the IP, then navigate in the browser to $IP:49000.
 </li>
 <li>
-You might get an rstudio error "Error in plot.new() : figure margins too large" if the plot area is too small (e.g. if you're using a small screen or if you squished the plot area to be smaller). In that case, enlarge the plot area and run again.
+You might get an rstudio error telling you that the figure margins are too large if the plot area is too small (e.g. if you're using a small screen or if you squished the plot area to be smaller). In that case, enlarge the plot area and run again.
 </li>
 <li>
-All the data required was provided in this docker. Ideally the data would be separate from the code in either another data container or mounted to a directory when you run docker. I didn't do that here because [this issue](https://github.com/docker/docker/issues/4023) doesn't allow mounting whole directories on OSX. If that is fixed I might update this.
+All the data required was provided in this docker. Ideally the data would be separate from the code in either another data container or mounted to a directory when you run docker. I didn't do that here because <a href="https://github.com/docker/docker/issues/4023">this issue</a> doesn't allow mounting whole directories on OSX. If that is fixed I might update this.
 </li>
 </ul>
 
-<h2>Challenges</h2>
+<h3>Challenges</h3>
 I am no expert, but I think Docker is great, and solves a lot of
 problems. That being said, there are still challenges:
 
 <ul>
-  <li>Like my labmate Assaf Gordon says, <em>"It works everywhere, except
-      when it doesn't".</em>
-    <p>I got this to run on my Mac (which
+  <li><strong>Like my labmate Assaf Gordon said, <em>"It works everywhere, except
+      when it doesn't".</em></strong>
+    <p>Supposedly this should work on most common operating systems. I did get this to run on my Mac (which
       because of some user errors on my part was pretty painful but
       eventually worked). But several older Ubuntu distributions wouldn't
-      work, or at least weren't straightforward. This is still not a
-      perfect solution that runs everywhere.</li>
-  <li>How will this scale for studies working with huge datasets?
+      work, or at least I gave up before they did. </li>
+  <li><strong>How will this scale for studies working with huge datasets?</strong>
     <p>
       It's great to provide analyses that can be completely rerun by
       other researchers. But sometimes it's just not feasible for
@@ -239,7 +216,7 @@ problems. That being said, there are still challenges:
       datasets, provide a Docker with the code that will allow someone
       to rerun the analysis on a single or several genomes. 
   </li>
-  <li>Docker should not replace writing good code
+  <li><strong>Docker should not replace writing good code</strong>
     <p>
       One argument against the Docker solution is that you can still publish
        crappy code and distribute it in a docker. You could even
@@ -253,32 +230,33 @@ problems. That being said, there are still challenges:
 	clean easily runnable code. But I do think there is a tradeoff
 	here between how much time a bioinformatician spends getting the
 	code to run everywhere vs. how much time the user spends
-	getting the time to run. The bioinformatician could spend a
+	has to invest. The bioinformatician could spend a
 	month making his or her code run smoothly everywhere, or could
-	spend a day making it work once on a Docker, with a
+	spend a day making it work once on a Docker, with probably a
 	little bit of extra effort on the part of users to use
 	Docker. But of course neither of these options should give an
 	excuse to write bad code.
       <p>
-	Related to this, I don't think Docker is the solution to
-	everything. I think if you have some R/Python/etc. scripts
+	Related to this, <strong>I don't think Docker is the solution to
+	everything</strong>. I think if you have some R/Python/etc. scripts
 	that you used for analysis and to make figures, Docker is a
 	great way to make them easily runnable by other people in such
 	a way that does not require them to install a bunch of
 	libraries, deal with setting up paths, etc. BUT, if you're
-	publishing a tool (e.g. GATK, bwa, Bowtie, etc.), it's not
+	publishing a tool for which you expect heavy duty use from a lot of people on their own datasets (e.g. GATK, bwa, Bowtie, etc.), it's not
 	enough to put it in a Docker and have it run. If you want
-	people to heavily use your tool, it's going to have to run
+	people to use your tool, it's going to have to run
 	well on a variety of systems and you're going to have to put
 	in that effort.
   </li>
 </ul>
 
-<h2>Conclusion</h2>
-First, special thanks to Assaf Gordon and Alon Goren for all the great conversations about this.
+<h3>Conclusion</h3>
 <p>
 I would love to hear what others think and discuss this and other
 options for improving reproducibility. Like I mention above, I don't
 think Docker is the perfect solution, or that a single perfect
 solution exists, but I think it solves a lot of
 problems and is a step in the right direction.
+<p>
+Special thanks to Assaf Gordon and Alon Goren for all the great conversations about this.
