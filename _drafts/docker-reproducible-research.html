@@ -7,33 +7,70 @@ categories: science
 date: 2014-08-21 00:11:00
 ---
 
-Intro - TODO
-lots of talk about reproducible research:
-  cite nature series, other articles about this, my previous blog post
+Just open up the Internet and you will see tons of talk about
+#reproducibleresearch: check it out on
+[twitter](https://twitter.com/search?q=%23reproducibleresearch&src=typd),
+[Nature](http://www.nature.com/nature/focus/reproducibility/), all
+over the blogosphere, and more than a few genomics startups. Clearly, there is growing concern about how we
+can make our analyses more reliable and transparent.
 
-some papers have started publishing data/code to go with figures and
-analysis (put some examples)
+Encouagingly, some publications are starting to actually publish the
+code and data used for analysis and to generate figures. For example,
+many articles in Nature and in the new [Elife
+journal](http://elifesciences.org/) (and others)
+provide a "source data" download link next to figures. Sometimes Elife
+might even have an option to download the source code
+for figures. Or even better, some authors are publishing all or most
+of code and data used for anlaysis and figures
+(e.g. [here](http://www.plosgenetics.org/article/info%3Adoi%2F10.1371%2Fjournal.pgen.1004549)
+and [here](http://www.nature.com/nbt/journal/vaop/ncurrent/full/nbt.2972.html)).
 
-this is the beginning, but not there yet: need a way to make results
-easily reproducible, in a way that others can interact with
+This is a great start, but here's the problem: if I really want to
+rerun stuff from these papers, it is actually pretty annoying. I
+download the scripts and data, I realize I don't have all the required
+libraries. Or that it only runs on an Ubuntu version I don't have, or
+some paths are hard-coded to match the authors' machines. If it's not
+easy for me to run and doesn't run "out of the box" the chances that I
+will actually ever run most of these scripts is close to zero.
 
-outline of what I talk about
-say the goal of providing all the analysis for a paper encapsulated in
-a docker
-say I'd love to have open discussion about this, what would be the
-best way to publish paper like this
+For published code and data to be useful, it not only has to
+be <b>reproducible</b>, but it also has to be <b>easy to reproduce and
+  interact with the data</b>. Otherwise no one will ever touch
+it. Right now, what we are doing is posting our data and messy scripts
+that we got to work for ourselves when the stars were aligned, and
+saying to anyone that wants to reproduce it: "it worked for me, good
+luck." But then the burden is on the user to figure out how in the
+world to get this stuff to run. Really, a lot of this burden should be
+on the author if they want anyone to care about or use what they
+published. That will ultimately make for more accountability, better
+code, and result in the research being much more useful to other
+scientists.
 
-<h2>Challenges in providing easily reproducible results</h2>
-challenges: want to be reproducible, but also that it is *easy* for
-others to reproduce it, else it's not useful and no one will waste
-their time
-burden is on the author to make this easy, not just to hand the
-scripts off and say good luck
-will make for better code, more accountability, and research that is
-more useful to other people
+I recently started experimenting with
+[Docker](https://www.docker.com/), which might have a solution to many
+of these problems. Basically, it is kind of like a lightweight virtual
+machine where you can set up a compute environment, including all the
+libraries, code, data, you need, in a single "image". That image can
+be distributed publicly and can seamlessly run on theoretically most other
+systems. No need for the user mess with installation, paths, etc. They
+just run the docker you provided, and everything is set up to run out
+of the box. Many others
+(e.g. [here](https://bcbio.wordpress.com/2014/03/06/improving-reproducibility-and-installation-of-genomic-analysis-pipelines-with-docker/)
+and
+[here](http://figshare.com/articles/Using_Docker_to_Support_Reproducible_Research/1101910))
+have already started discussing this.
 
-<h2>Using docker for reproducible analyses</h2>
+I think it'd be pretty awesome if when we published a paper, we also
+provide a Docker image that is already set up to run all the analyses
+and recreate all the figures in the study. Below I discuss how to use
+Docker to do this, show an example Docker to reproduce figures from a published
+paper, and talk about what think are the promises and problems with
+this approach. I'd love to have a discussion about how people think
+this kind of approach can or cannot solve reproducibility issues.
 
+<h2>Using Docker for reproducible analyses</h2>
+
+TODO
 say what docker is
 why it can be useful for this: provide an environment where everything
 is already set up. don't send me chasing some obscure libraries,
@@ -45,7 +82,6 @@ figshare reproducible research pdf
 say how I would do it (Github repo for a paper, have Dockerfile there,
 separate data directory)
 makefile to get all results? several options to discuss
-
 
 <h2>Example - reproducing Martin, et al. PLOS Genetics 2014</h2>
 I wanted to go through an excercise of how it would actually work to
@@ -95,7 +131,45 @@ published manuscript.
 
 <h3>Run the docker yourself</h3>
 
+First you should make sure you have [Docker](http://docs.docker.com/)
+installed. I assume you have some familiarity with Docker (if not the
+tutorials on the site are great and show you how much fun it is).
+<p>
+The Docker for this example is published on Docker hub
+([mgymrek/docker-reproducibility-example](https://registry.hub.docker.com/u/mgymrek/docker-reproducibility-example/)).To
+run it, simply run:
+<pre>
+docker run -p 49000:8787 -d mgymrek/docker-reproducibility-example
+</pre>
+(You can replace 49000 with another open port if you want.) Navigate
+in your web browser to http://0.0.0.0:49000. This will open up
+rstudio. The username and password are both “guest”. You can open
+files in the <pre>scripts/</pre> directory and run them to reproduce
+figures S7B and S1 from Martin et al. (martin_etal_figS1.R and
+martin_etal_figS7B.R). Voila, you didn't have to install rstudio, you
+didn't have to install any R packages, you didn't have to configure
+any paths, and it should just work.
+
 <h3>Notes</h3>
+<ul>
+<li>
+If you're running on Mac, you should have already installed,
+initialized, and started boot2docker using the instructions
+[here](http://docs.docker.com/installation/mac/). Instructions are the
+same as above, except instead of using "0.0.0.0" as the IP address,
+run:
+<pre>
+boot2docker ip
+</pre>
+to get the IP, then navigate in the browser to $IP:49000.
+</li>
+<li>
+You might get an rstudio error "Error in plot.new() : figure margins too large" if the plot area is too small (e.g. if you're using a small screen or if you squished the plot area to be smaller). In that case, enlarge the plot area and run again.
+</li>
+<li>
+All the data required was provided in this docker. Ideally the data would be separate from the code in either another data container or mounted to a directory when you run docker. I didn't do that here because [this issue](https://github.com/docker/docker/issues/4023) doesn't allow mounting whole directories on OSX. If that is fixed I might update this.
+</li>
+</ul>
 
 <h2>Challenges</h2>
 I am no expert, but I think Docker is great, and solves a lot of
