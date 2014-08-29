@@ -13,7 +13,7 @@ Just open up the Internet and you will see tons of talk about
 [Nature](http://www.nature.com/nature/focus/reproducibility/), all
 over the blogosphere, and more than a few genomics startups. Clearly, there is growing concern about how we
 can make our analyses more reliable and transparent.
-
+<p>
 Encouagingly, some publications are starting to actually publish the
 code and data used for analysis and to generate figures. For example,
 many articles in Nature and in the new [Elife
@@ -24,7 +24,7 @@ for figures. Or even better, some authors are publishing all or most
 of code and data used for anlaysis and figures
 (e.g. [here](http://www.plosgenetics.org/article/info%3Adoi%2F10.1371%2Fjournal.pgen.1004549)
 and [here](http://www.nature.com/nbt/journal/vaop/ncurrent/full/nbt.2972.html)).
-
+<p>
 This is a great start, but here's the problem: if I really want to
 rerun stuff from these papers, it is actually pretty annoying. I
 download the scripts and data, I realize I don't have all the required
@@ -32,7 +32,7 @@ libraries. Or that it only runs on an Ubuntu version I don't have, or
 some paths are hard-coded to match the authors' machines. If it's not
 easy for me to run and doesn't run "out of the box" the chances that I
 will actually ever run most of these scripts is close to zero.
-
+<p>
 For published code and data to be useful, it not only has to
 be <b>reproducible</b>, but it also has to be <b>easy to reproduce and
   interact with the data</b>. Otherwise no one will ever touch
@@ -45,7 +45,7 @@ on the author if they want anyone to care about or use what they
 published. That will ultimately make for more accountability, better
 code, and result in the research being much more useful to other
 scientists.
-
+<p>
 I recently started experimenting with
 [Docker](https://www.docker.com/), which might have a solution to many
 of these problems. Basically, it is kind of like a lightweight virtual
@@ -59,7 +59,7 @@ of the box. Many others
 and
 [here](http://figshare.com/articles/Using_Docker_to_Support_Reproducible_Research/1101910))
 have already started discussing this.
-
+<p>
 I think it'd be pretty awesome if when we published a paper, we also
 provide a Docker image that is already set up to run all the analyses
 and recreate all the figures in the study. Below I discuss how to use
@@ -69,19 +69,61 @@ this approach. I'd love to have a discussion about how people think
 this kind of approach can or cannot solve reproducibility issues.
 
 <h2>Using Docker for reproducible analyses</h2>
+Here I want to describe a little bit how the setup works.
 
-TODO
-say what docker is
-why it can be useful for this: provide an environment where everything
-is already set up. don't send me chasing some obscure libraries,
-etc. can run anywhere
-site: 
-https://bcbio.wordpress.com/2014/03/06/improving-reproducibility-and-installation-of-genomic-analysis-pipelines-with-docker/
-figshare reproducible research pdf
-
-say how I would do it (Github repo for a paper, have Dockerfile there,
-separate data directory)
-makefile to get all results? several options to discuss
+Docker has a repository of images called [Docker
+hub](https://hub.docker.com/) that is pretty analagous to
+[github](github.com/) except for Docker images instead of for
+code. You can pull, push, and modify images and share them with other
+people and trace their history. For instance I made an image to run an Rstudio server by
+pulling the base ubuntu:14.04 image, modifying it to include everything
+needed to run Rstudio, and making a new image out of that (which I
+deposited at
+[mgymrek/docker-rstudio-server](https://registry.hub.docker.com/u/mgymrek/docker-rstudio-server/),
+the github repo it's built from is [https://github.com/mgymrek/docker-reproducibility-example](https://github.com/mgymrek/docker-reproducibility-example)). Everything
+to build the image is specified in a Dockerfile that you can view
+there, so you know exactly how I created that environment.
+<p>
+A very cool feature is that Docker can link up with your github
+account. So you can make a github repository with a Dockerfile in it
+specifying how to build an image (and maybe add to it some scripts you
+have in that github repository). Docker will automatically detect when
+you change that repository, create a Docker image using the
+instructions in your Dockerfile, and post it as a "trusted
+build". (see [automated
+builds](http://docs.docker.com/docker-hub/builds/)).
+<p>
+So my vision of how this would work for a publication is that every
+publication would have its own github repository. There you can store
+all the code you used with version control. You would then include a
+Dockerfile in this repository specifying how to set up the exact
+environment that you used to run that code. Then you would end up with
+an automatically built docker image on docker hub that anyone can
+download and run in such a way that they see exactly what you saw when
+you ran the analysis.
+<p>
+When you run a docker container, you can specify a command that it
+should run when you first start it up. (The docker documentation
+explains all about this.). For instance, if you want the user to be
+able to play around inside, they can start it up with the command
+/bin/bash. However, you can also provide a Docker that doesn't require
+them to do any playing around in the shell. For instance, in the
+example below, I set it up so that it automatically runs the web
+browser version of rstudio with all the code and data set up, so that
+all one needs to do is run the docker, go to the web browser, and
+there is all the code and data ready to go in an interactive
+environment.
+<p>
+But that is only one way to do things. You could do a similar setup
+where you use IPython notebook for instance rather than rstudio. Or
+you could provide one Makefile that will make all of the figures and
+reproduce analyses with a single command. Instead of providing the
+data in the Docker, you can provide the data as a separate download
+that users can mount to the Docker when they run it (which I think is
+better anyway, since it makes sense to separate the code from the
+data). Below is
+a working example of how I got this to work going the Rstudio route. But there are countless ways to
+set this up and I'd love to discuss different possibilities. 
 
 <h2>Example - reproducing Martin, et al. PLOS Genetics 2014</h2>
 I wanted to go through an excercise of how it would actually work to
