@@ -46,12 +46,6 @@ say how I would do it (Github repo for a paper, have Dockerfile there,
 separate data directory)
 makefile to get all results? several options to discuss
 
-<h2>Challenges</h2>
-requires that bioinformaticians become knowledgeable in this stuff,
-but that will make us better coders anyway
-really huge datasets that require the cloud - at least provide small examples?
-data access problems - again, provide small examples, separate code
-from the data, ppl want to download data separately anyway
 
 <h2>Example - reproducing Martin, et al. PLOS Genetics 2014</h2>
 took as example these guys, give big kudos for putting code/scripts
@@ -67,6 +61,51 @@ loaded. provide separate data dir
 docker set up with all the paths etc. it needs
 
 <h3>Run the docker yourself</h3>
+
+<h2>Challenges</h2>
+I am still no expert, but I think Docker is great, and solves a lot of
+problems. It does require a sizeable investment from bioinformaticians
+to learn a new tool, and to have more accountability for making our
+code better and more useable. That being said, there are still challenges:
+
+<ul>
+  <li>Like my labmate Assaf Gordon says, <em>"It works everywhere, except
+      when it doesn't".</em>
+    <p>I got this to run on my Mac (which
+      because of some user errors on my part was pretty painful but
+      eventually worked). But several older Ubuntu distributions wouldn't
+      work, or at least weren't straightforward. This is still not a
+      perfect solution that runs everywhere.</li>
+  <li>How will this scale for studies working with huge datasets?
+    <p>
+      It's great to provide analyses that can be completely rerun by
+      other researchers. But sometimes it's just not feasible for
+      someone else to go rerun your analysis of 200TB of sequencing
+      data that you ran across hundreds of nodes on the cloud. I don't know what the perfect reproducibility solution is for such
+      huge studies, but maybe there is a partial solution. You can at
+      least provide the code and computing environment that was used
+      for the analyses. Ideally you would provide a subset of the data
+      that another person can rerun and see that they get the same
+      results. For instance, if your study processed 3,000 sequencing
+      datasets, provide a Docker with the code that will allow someone
+      to rerun the analysis on a single or several genomes. 
+  </li>
+</ul>
+
+requires that bioinformaticians become knowledgeable in this stuff,
+but that will make us better coders anyway
+really huge datasets that require the cloud - at least provide small examples?
+data access problems - again, provide small examples, separate code
+from the data, ppl want to download data separately anyway
+ideally would provide code separate of data, but mounting directories
+on mac didn't work so just included them for now.
+
+other points:
+not good for all situations. if making a program that you want ppl to
+run (e.g. bwa, etc.) it should compile/run *most* places. not enough
+to make a docker out of it
+but if you want someone to reproduce your r/python scripts to see how
+you got your figure, then this is a great option
 
 <h2>Conclusion</h2>
 
