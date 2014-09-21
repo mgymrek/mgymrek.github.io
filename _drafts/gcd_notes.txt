@@ -1,4 +1,4 @@
-Big messages from each talk
+## Big messages from each talk
 
 * Bert Vogelstein (keynote)
 Deaths from cardiovascular disease over the last 60 years have
@@ -118,19 +118,99 @@ variants.
 
 * Hilary Finucane
 Using a novel statistical genetics metric, the LD score, we can more
-accurately measure the heritability of polygenic traits, and can partition
+accurately measure the heritability of polygenic traits, and can
+partition heritability between different functional annotations.
 
+* Teri Manolio
+Manolio describes growing genomic medicine initiatives from around the
+world. 
+
+* Tim Hubbard
+UK is sequencing 100,000 clinical grade genomes with a focus on rare
+inherited diseases, cancer, and pathogens. This project will be
+directly integrated with the health care system, and aims to develop
+important infrastructure for integrating sequencing into health care.
+
+* David Altshuler
+To fully understand the genomics of many diseases, we will need to
+look across hundreds of thousands or even millions of genomes. No
+single institute has the capacity for this, and a key element of
+progress will be to ensure interoperability of genomics data across
+many institutions worldwide. Unless we take action, genomics data will
+become "balkanized" in different silos. The Global Alliance seeks to
+advance interoperability of genomics data by developing important ethical and
+technical frameworks.
+
+* Steve Munger
+Many mouse studies are done using the Black 6 strain, and are found
+not to recapitulate human responses. However, this
+strain behaves like an outlier strain in many respects. At Jackson
+Laboratory, they are creating an outbred mouse strain from 8 founder
+strains to allow more complex studies of genotype-phenotype
+relationships in mice.
+
+* Feng Zhang
+CRISPR-Cas9 allows precise genome-editing. It can be used for a huge
+variety of genomics applications, including generating genome-scale
+knockout libraries and editing specific genomic variants. Zhang's
+group developed a cre-dependent Cas9 mouse, allowing cell-type
+specific Cas9 expression and genome editing.
+
+* Kiran Musunuru
+In associated genotype to phenotype, we need to address four key
+questions: (1) what is the causal variant? (2) How do we link the
+causal variant to a gene? (3) What is the causal gene? (4) How do we
+relate the causal gene to the phenotype? Musunuru is following up a
+GWAS hit for Type 2 Diabetes and HDL in KLF14 using a CRISPR screen to
+cover all of the variants at this locus.
+
+* Molly Przeworksi (keynote)
+There are a lot of basic properties of the human mutation process that
+we still don't understand. Recent studies have estimated the germline
+mutation rate using different methods, including looking at disease
+related genes, phylogenetic relationships, and deep sequencing
+trios, each of which gives different estimates. Przeworksi presents a
+model accounting for mutation repair rates, paternal age, and
+generating time and shows how it could reconcile estimates from
+different methods.
+
+* Gil McVean
+Many germline mutations are not simple point mutations. How can we
+access the full spectrum of de novo mutations? McVean looks at
+plasmodium genomes using an assembly based approach to study all types
+of variation in a hypothesis free way.
+
+* Joanna Mountain (23andme)
+23andme looks at the genetic landscape of individuals across the
+US. Using data from its large user-base, they can infer different
+ancestry components in diverse populations including Latinos, African
+Americans, and Americans of European descent.
+
+* Rebecca Rothwell
+Rothwell develops a method of mitochondrial transmission in
+humans. She shows that a "nucleoid model", in which groups of 5-10
+mitochondria replicate as a unit, fits best to current data.
+
+* Julie Segre
+Segre shows the use of PacBio and Illumina sequencing technologies to
+track outbreaks of hospital acquired infections.
 
 My big areas:
 - huge datasets, infrastructure will be huge (Chin, Altshuler,
 Manolio, big projects like GTEx, 1000G)
-- need to better integrate data to interpret GWAS hits. think clever
+- need to better integrate data to interpret GWAS hits. hilary
+partition heritability, but also think clever
 computational methods to do this will be key (Hoskins,
 Dongwon's poster on DNAse, Cox)
 - better phentoyping (Tobin, Gregerson, Cho)
 - issue of penetrance. rarely see fully penetrant variant in complex
 disease. crucial to also look at individuals *without*
-the phenotype which have that variant.  (deCODE talk is key, Altshuler global alliance)
+the phenotype which have that variant.  (deCODE talk is key, Altshuler
+global alliance)
+- genome editing (not discussed as much as I thought it would be, but
+key) Zhang, Musunuru. my qusetions: different cellt ypes, how get it
+to scale
+- add my commentary: mcvean, decode
 
 
 Orli's big questions:
