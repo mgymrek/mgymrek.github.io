@@ -48,7 +48,3 @@ So the question: **what drives the enrichment of "T" rich motifs on the coding s
 * Maybe "A" rich regions are just harder to transcribe and selected against.
 
 While it is unclear what is driving these biases, clearly they exist and likely tell us something important about the role of STRs in transcription.
-
-
-
-
