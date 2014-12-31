@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Thoughts Xiong, et al. "The human splicing code reveals new insights into the genetic determinants of disease"
+title: Thoughts on Xiong, et al. "The human splicing code reveals new insights into the genetic determinants of disease"
 published: true
 tags: science
 categories: science
@@ -15,7 +15,7 @@ Xiong et al. build a model that uses nearby sequence features to predict for a t
 
 As for how the model works, unfortunately the main text gives little information besides that it uses "machine learning." I realize there's a tradeoff between making the main text readable by a general audience and including full details of a method, but it really annoys me that even when computational methods are at the heart of a study, they often get buried in the supplemental material, and this paper is no exception. Digging into the 80+ page supplemental gives some more details: they used an ensemble of neural networks relating RNA features and PSI. The specific features (of which there are more than 1,000) are largely based on [their previous work](http://www.nature.com/nature/journal/v465/n7294/full/nature09000.html), and include things like short sequence motifs, nucleosome positioning information, "translatability", and more. Readers are referred to previous publications by the authors for more details ([Barash et al 2010](http://www.nature.com/nature/journal/v465/n7294/full/nature09000.html), and [Xiong et al 2011](http://bioinformatics.oxfordjournals.org/content/27/18/2554.long)).
 
-**Importantly, the model allows prediction of the effects of specific variants on splicing efficiency**: for a given site you can compare predicted PSI for the sequence containing allele A vs. allele B. To show the power of their model for doing so, the authors looked at the predicted effects of common SNPs vs. rare SNPs reportedly associated with disease. They found that intronic disease SNPs are 9x as likely as intronic common SNPs to affect splicing. When restricting to synonymous SNPs, disease SNPs are 9.3x as likely to affect splicing. Interestingly, there was no overall enrichment for disease vs. common missense SNPs, but restricting to positions predicted not to affect protein function showed a 5.6x enrichment for disease vs. common SNPs. GWAS SNPs were not enriched compared to non-GWAS SNPs, but this is likely because the best GWAS SNPs are rarely the actual causal variant in the region.
+Importantly, the model allows prediction of the effects of specific variants on splicing efficiency: for a given site you can compare predicted PSI for the sequence containing allele A vs. allele B. To show the power of their model for doing so, the authors looked at the predicted effects of common SNPs vs. rare SNPs reportedly associated with disease. They found that intronic disease SNPs are 9x as likely as intronic common SNPs to affect splicing. When restricting to synonymous SNPs, disease SNPs are 9.3x as likely to affect splicing. Interestingly, there was no overall enrichment for disease vs. common missense SNPs, but restricting to positions predicted not to affect protein function showed a 5.6x enrichment for disease vs. common SNPs. GWAS SNPs were not enriched compared to non-GWAS SNPs, but this is likely because the best GWAS SNPs are rarely the actual causal variant in the region.
 
 The authors then go on to look at three disease-specific cases (spinal muscular atrophy, Lynch Syndrome, and autism) . For the first two, they predict effects of sites known to be associated with disease and show good concordance with experimental mutagenesis data. I was a little less convinced by the autism data, but they were able to show that a higher percent of SNPs predicted to affect splicing in cases vs. controls do so in brain, and that these variants are enriched for neurodevelopmental annotations which are not enriched in controls.
 
@@ -28,15 +28,22 @@ The authors then go on to look at three disease-specific cases (spinal muscular 
 
 ### Does this give us any insight into how splicing works?
 
+I'm convinced that this model gives quite good predictions of splicing efficiency across a variety of contexts. But what I did not get from reading this paper was that we leanred any new insights into how splicing works. It would have been great if they discussed what the most informative features turned out to be. Did unexpected or novel features play a big role? Is there a clear set of "important" features that teaches us about the splicing code, or is the answer it's complicated and only by combining hundreds of features into a black box (neural network) can we get good predictions? 
+
 ### Great effort by authors to provide a web app to make their results useful to others
-- whoo uses flask
-- nice and shiny
-- wish it told me: score for different tissues, ability to export results to text format
+
+The authors set up a shiny web application where users can upload their own set of SNPs and get predictions about their effects on splicing. This makes their results infinitely more useful and accessible and I wish more papers did this. Otherwise the method would be buried in the supplemental forever and nobody would ever use it.
+
+I found their website very easy to use. I do wish that it gave scores by tissue and that it had the ability to export results to a text format for further processing.
 
 ### Future directions
 
-* **There's no reason this has to be restricted to SNPs**
-* **Fine-mapping association signals**
-* **What else can we predict using deep learning from sequence information?**
+I think there is a lot of room to apply similar predictive methods to a wide range of important problems:
+
+* **There's no reason this has to be restricted to SNPs**. The authors only talk about single nucleotide changes in the paper, but one could easily apply the exact same method to predict regulatory changes caused by other variant types, such as indels or short tandem repeats. These have been much less explored and there is potentially a lot to learn from doing this.
+* **Fine-mapping association signals**. We can start to use this type of approach to help in fine-mapping: i.e. predict the functional effect of all variants tagged by a GWAS SNP to determine likely candidates for causal variants. A model-based prediction approach will likely be more promising than simply overlapping SNPs with known annotations.
+* **What else can we predict using deep learning from sequence information?**. Lots of things. The authors point out a few in the discussion (chromatin dynamics, transcription, polyadenylation, mRNA turnover, protein synthesis, and protein stabilization, likely all can be predicted to some extent using sequence features). The features will be different but the methods will be similar. If we can build good models of these things we can start to build a great toolkit for predicting effects of regulatory variation in the genome, and hopefully gain biological insights along the way.
+
+In summary I'm excited about the powerful predictions made by this type of approach and think it holds good promise for interpreting results in the post-association-study world.
 
 
