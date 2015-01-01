@@ -7,7 +7,7 @@ categories: science
 date: 2014-12-31 00:00:00
 ---
 
-**Summary**: My thoughts on the recent paper by [Xiong et al.](http://www.sciencemag.org/content/early/2014/12/17/science.1254806.full) published in *Science* this month. Overall I think this study is very promising in showing how we can build powerful model-based predictions of gene regulation using sequence features. 
+**Summary**: My thoughts on the recent paper by [Xiong et al.](http://www.sciencemag.org/content/early/2014/12/17/science.1254806.full) published in *Science* last month. Overall I think this study is very promising in showing how we can build powerful model-based predictions of gene regulation using sequence features. 
 
 ## Summary of the study
 
