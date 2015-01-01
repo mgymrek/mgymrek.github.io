@@ -35,7 +35,7 @@ But what I did not get from reading this paper was that we learned any new insig
 
 ### Great effort by authors to provide a web app to make their results useful to others
 
-The authors set up a shiny web application where users can upload their own set of SNPs and get predictions about their effects on splicing. This makes their results infinitely more useful and accessible and I wish more papers did this, so big kudos! Otherwise the method would be buried in the supplemental forever and nobody would ever use it.
+The authors set up a [shiny web application](http://tools.genes.toronto.edu/) where users can upload their own set of SNPs and get predictions about their effects on splicing. This makes their results infinitely more useful and accessible and I wish more papers did this, so big kudos! Otherwise the method would be buried in the supplemental forever and nobody would ever use it.
 
 I found their website very easy to use. I do wish that it gave scores by tissue and that it had the ability to export results to a text format for further processing.
 
