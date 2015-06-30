@@ -7,7 +7,7 @@ categories: science
 date: 2015-06-29 00:00:00
 ---
 
-**Summary**: My notes on a paper recently posted on *biorXiv* by [Gamazon, Wheeler, and Shah et al.](http://biorxiv.org/content/early/2015/06/17/020164) about using imputed expression values to map human traits. Overall I think this is a clever and powerful method for providing biological insight into GWAS signals. However I think there is still a lot of work to be done in effectively incorporating transcriptomic data into GWAS.
+**Summary**: My notes on a paper recently posted on *bioRxiv* by [Gamazon, Wheeler, and Shah et al.](http://biorxiv.org/content/early/2015/06/17/020164) about using imputed expression values to map human traits. Overall I think this is a clever and powerful method for providing biological insight into GWAS signals. However I think there is still a lot of work to be done in effectively incorporating transcriptomic data into GWAS.
 
 ## Summary of the study
 
