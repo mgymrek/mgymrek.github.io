@@ -29,40 +29,48 @@ The authors first develop their method for expression prediction. They tested se
 
 They used their expression model on whole blood to impute expression in samples from WTCCC and used logistic regression to perform association tests for 7 complex traits. They found 41 significant associations across 5 traits. As expected, most of these associations are near previously reported signals. Some novel associations are reported (e.g. DCLRE1B in T1D and rheumatoid arthritis), and other previous associations are recovered (e.g. PTPN22 in T1D and RA) with the added benefit of getting information about the direction of effect.
 
-## My Thoughts - TODO
+## My Thoughts
 
-0. Overall: clever and Powerful method with clear advantages
-- obvious thing would be to use expr x trait. but run into issue of causality. but here since focus on grex, this shouldn't be an issue
-- will only work on genes with eqtls. how many gwas hits are nowhere near an eqtl gene?
-- wish there were more examples where the gene not obvious. FTO is key example: should show here what you do on that!
-- will this explain additional h2? no. don't expect this to lead to many new hits or explain any more h2
+SNP-based GWAS scans give no biological information about the resulting signals. Often it is not straightforward to determine even which gene is important in driving a signal. One option is to use proximity: if the top SNP is close to a gene, then it is a reasonable hypothesis that the hit has something to do with that gene. However, as I mentioned above, this method can often fail.
 
-concerns/things I'd like to see:
-1. reproducibility of expression estimates
-- how much does training set matter? If I train on gtex instead will I get a different result?
-- how concordant are the weights between studies? what about h2 estimates?
-- what about the R2 for model vs. different datasets? show 10-fold cross validation is pretty good (0.137 compared to upper limit of h2=0.153)
-- used weights from DGN whole blood to predict geuvadis LCLs. why? we know they're different. QQ plot of r2 seems a pretty ridiculous way to show this, of course we sure hope the r2's are different than the null distribution. why not show histogram of the r2s?
-- average r2 0.0197 for geuvadis lcls, a lot lower than the 0.137 in same dataset. For GTEx, higher in all, highest in whole blood. why are r2 so much lower in different datasets? different populations? technical variation? different normalization applied to each? this is a huge difference
-data
-- dgn: downloaded normalized gene level data
-- geuvadis: raw data? norm?
-- gtex: adjust for gender 3 pcs 15 peer factors
-- what about different populations?
+Expression data can give us a more direct idea of which genes are important. One obvious thing to try would be to try and associate raw gene expression with a trait. However, this approach lacks a key point of GWAS, namely the direction of causality is not clear. When correlating a SNP with a trait, we can be reasonably sure which direction causality goes, since the trait is unlikely to affect the underlying genotypes. However, it's not clear this works with expression. It could very well be for instance that having diabetes changes expression of some genes. Then naively associated expression with diabetes would reveal these genes as hits, even if they are not underlying causes of the disease. **PrediXcan cleverly gets around the problem of reverse causality by focusing on the component of gene expression that is genetically regulated.**
 
-2. Do more with tissue specificity
-expected more on this, given how big of an advantage it is
-useful in learning about relevant tissue: also wish they showed: can use this to figure out tissue specificity by looking for enrichment of signal in various tissues
-- why did they use DGN whole blood to test in each GWAS, why not get in GTEx all tissues then look at all of those? what about comparing when different reference transcriptomes are used? 
+Will this approach explain addition heritability? The answer must be no. We can't create information from nothing, and converting SNP genotypes to gene expression values will not be able to explain any more heritability than just using the SNPs in the first place. Will this approach find new signals? Maybe, perhaps due to the increase in power with a lower multiple hypothesis burden. But for the most part this will give biological insight into existing samples: which genes are important? what is the direction of effect? Which tissues are important? 
 
-3. Other minor points
-- how many SNPs per gene are useful? 1? more? how many features does the LASSO choose on average? are the same SNPs used in different datasets?
-- figure 7 not convincingly better than SKAT (look up how this works). just a few hits are higher
-- what's going on with the components of gene expr?
-break up gene expression into components:
-1. GReX
-2. altered by trait itself (reverse causal) what is the motivtation for this? how much weight does this usually get? potentially very interesting, but not discussed at all
-3. environmental/other factors
+Overall, I think PrediXcan is a clever and powerful method that gives additional information on top of SNP-based GWAS scans. Despite its advantages though, I think there is still a lot of work to be done to effectively incorporate transcriptome data (and other omics data) into GWAS interpretation. I discuss some of my specific concerns and things I would have liked to see more of below.
 
-## Future directions - TODO
-future directions: apply to all gwas's. get relevant genes, tissues of interest											is there a way to do this without the intermediate gene expression value? like take all assoc with expression, use variance partitioning? will lose information with this intermediate calculation, inherently noisy. (is this what they refer to as attenuation bias?)
+### 1. More specific examples
+I wish the authors had shown some clear examples where the implicated gene was not obvious from the original GWAS scan. The FTO case is a key example: was PrediXcan able to pull out IRX3? Was it able to determine the relevant tissue time? I would have like to see this and perhaps other cases where PrediXcan clearly gave us the right answer that wasn't obvious beforehand.
+
+### 2. Expression values depend heavily on the training dataset
+The authors primarily use SNP weights trained on the DGN whole blood samples. How much does the training dataset matter? If I now train this on GTEx or Geuvadis will I get similar weights and expression predictions?
+
+It seems like the answer that the training set matters quite a bit. While imputation seems to work quite well when performing cross-validation on DGN samples (average R<sup>2</sup>=0.137 compared to the upper limit defined by an average heritability of 0.153), the picture looks quite a bit different when using a model trained on DGN to impute expression in other datasets.  
+
+The DGN whole blood model was used to predict expression for Geuvadis and GTEx LCL samples (note, whole blood and LCLs are not quite the same thing, and they are expected to have different eQTLs and therefore different SNP weights, so we know there should be some differences). The average R<sup>2</sup> in the Geuvadis data was 0.0197, compared to 0.137 in the cross validation analysis. GTEx was a little better, with values between 1-5% across 9 tissues, with whole blood reassuringly showing the best performace. So expression imputation is performing significantly worse when using a model trained on one dataset to impute expression in another.
+
+The results of the validation exercises were displayed in a peculiar way, that seems a little like it is trying to hide the weak R<sup>2</sup> results: Figure 4 shows a QQ plot comparing the expected distribution of R<sup>2</sup> under the null vs. the observed distribution of R<sup>2</sup>'s across genes. Of course the observed R<sup>2</sup>'s show strong departure from the null expectation, which I sure hope is the case! Otherwise this would mean that one eQTl dataset gives essentially no information about eQTLs in another dataset and all hope is lost. What would have been more informative would be a simple histogram of R<sup>2</sup> values across all genes.
+
+Although discouraging, the poor reproducibility of models across expression datasets is perhaps not surprising. It is well known that transcriptome data exhibits a large amount of noise due to technical variation, and people have spent entire careers on how to deal with this. One important consequence is that the normalization and processing details matter. Based on the methods, the expression datasets were all processed using distinct pipelines (and contained individuals with different population histories), which surely introduces variability (for DGN, they downloaded normalized gene level data, for Geuvadis they presumably downloaded normalized expression values but this wasn't clear, and for GTEx they performed their own processing by adjusting for genders, 3 top genotype principal components, and 15 peer factors). I would like to see how well this performs between independent datasets that have been uniformly processed. Or between microarry vs. RNAseq data performed on the same individuals. However, even if that does greatly increase the concordance, it is concerning how much normalization influences the imputed expression values, and therefore downstream association tests. I think a lot of work needs to be done to figure out the best way to do this.
+
+### 3. The ability to determine tissue specificity is not explored
+
+A key advantage of this method should be that it can provide tissue specific information. If a gene is associated with a trait in some tissues but not others, that is a good indication that a specific tissue plays a key role. Additionally, one could look at the distribution of p-values for associations across tissue types to determine the relevant tissue type. 
+
+The authors focused primarily on expression values imputed from the DGN whole blood data, and did not explore whether PrediXcan indeed gives informative information about relevant tissues. Why not GTEx as the reference transcriptome and use this to do associations with expression from different tissues?
+
+### 4. Other minor points
+
+* On average how many SNPs per gene were useful for prediction (e.g. had non-zero weights in LASSO or elastic net)? Does the best SNP capture most of the model? (If so, there is not much point in converting to expression values, one should just use that SNP). Do these results fit with what we know about eQTLs?
+
+* The authors claim that they break up expression into three components: (1) GReX (genetically regulated expression) (2) A reverse causality component representing an affect of the trait itself on expression and (3) environment/other factors. However as far as I can tell they never talk about these components again. In particular, component (2) sounds very interesting. Is this actually measured in this study? If so how much weight does it get?
+
+## Future directions
+
+An obvious future direction is to impute expression across many tissues in available GWAS datasets to determine which genes are driving signals, their directions of effect, and relevant tissue types.
+
+Another direction is to figure out how to combine information learned from expression data with fine-mapping approaches based on functional annotations of individual SNPs (e.g. work done by [Bogdan Pasaniuc's group](http://www.plosgenetics.org/article/info%3Adoi%2F10.1371%2Fjournal.pgen.1004722), [Joe Pickrell](http://www.cell.com/ajhg/abstract/S0002-9297%2814%2900106-2), and others).
+
+One other point is whether there is a way to do this without actually needing to calculate an intermediate expression value? The imputed values themselves seem to be poorly reproducible across studies, and information will be lost after the noisy conversion of SNP genotypes to expression. I think it's worth figuring out how to get around how to do this.
+
+In summary this is a good step toward incorporating transcriptomic data into GWAS, and it seems integrating approaches like this with other fine-mapping techniques will reveal new insights into unexplained GWAS loci and relevant tissue types driving different traits. 
