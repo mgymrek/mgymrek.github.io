@@ -7,7 +7,6 @@ categories: science
 date: 2015-11-28 00:00:00
 ---
 
-**Summary**: Certain STR motifs are much more likely to occur on the coding strand in transcribed regions, suggesting STRs may play an important role in properties of transcription.
 
 Short tandem repeats (STRs) are ubiquitous across the genome, with an average of several STRs per kilobase. Many of these STRs occur in transcribed regions (UTRs, exons, and introns). While most of these repeats are thought to have no functional consequences, some of them have been implicated in regulating transcription, suggesting that not all STRs are "neutral". 
 
