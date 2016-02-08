@@ -7,19 +7,22 @@ categories: science
 date: 2016-02-08 00:00:00
 ---
 
-<b>Summary</b>: STR expansions, while theoretically possible to detect from sequencing data, are still not accurately genotyped by standard tools.
+<br>
+<strong>Summary</strong>: STR expansions, while theoretically possible to detect from sequencing data, are still not accurately genotyped by standard tools.
+
+<h3>Background</h3>
+<p>
+Recently we and others have made a ton of progress in tackling the bioinformatic challenge of genotyping short tandem repeats (STRs) from high throughput sequencing data (see <a href="lobstr.teamerlich.org">lobSTR</a>.) However, our and other tools are only able to genotype repeats that are short enough to be completely spanned by sequencing reads, limiting us to STRs of less than ~80-90bp, and excluding the ability to type large expansions such as those seen in Huntington's Disease or Fragile X Syndrome. Furthermore, alignment advances (e.g. <a href="https://github.com/lh3/bwa">bwa mem</a>) are becoming more and more indel-sensitive, and new genotypers (e.g. <a href="https://www.broadinstitute.org/gatk/guide/tooldocs/org_broadinstitute_gatk_tools_walkers_haplotypecaller_HaplotypeCaller.php">GATK HaplotypeCaller</a>) are using more sensitive local assembly approaches that could potentially used for genotyping long STRs. </p>
 
 <p>
-Recently we and others have made a ton of progress in tackling the bioinformatic challenge of genotyping short tandem repeats (STRs) from high throughput sequencing data (see <a href="lobstr.teamerlich.org">lobSTR</a>.) However, our and other tools are only able to genotype repeats that are short enough to be completely spanned by sequencing reads, limiting us to STRs of less than ~80-90bp, and excluding the ability to type large expansions such as those seen in Huntington's Disease or Fragile X Syndrome. Furthermore, alignment advances (bwa mem) are becoming more and more indel-sensitive, and new genotypers (e.g. GATK HaplotypeCaller) are using more sensitive local-assembly based approaches that could potentially used for genotyping long STRs. 
+Here I evaluate how these tools perform at a long repeat, using the Huntington's CAG repeat as an example. The hg19 reference genome has 19 copies of CAG (at <a href="http://genome.ucsc.edu/cgi-bin/hgTracks?db=hg19&lastVirtModeType=default&lastVirtModeExtraState=&virtModeType=default&virtMode=0&nonVirtPosition=&position=chr4%3A3076553-3076652&hgsid=473848545_r4xfQG2exAL38oKjCgacwSn0HCHR">chr4:3076603</a>). Under 26 repeats is considered normal, and full mutations have 40 or more repeats. Normal and low end pathogenic mutations should be spanned by short reads (here I use 150bp paired end reads to be generous). I use a range of normal, short full, and long full mutations to test how bwa mem and GATK perform at these regions.</p>
 
-Here I evaluate how these tools perform at a long repeat, using the Huntington's CAG repeat as an example. The hg19 reference genome has 19 copies of CAG. Under 26 repeats is considered normal, and full mutations have 40 or more repeats. Normal and low end pathogenic mutations should be spanned by short reads (here I use 150bp paired end reads to be generous). I use a range of normal, short full, and long full mutations to test how bwa mem and GATK perform at these regions.
-
-The short answer is that in the easiest cases of short alleles that can be fully spanned by a single read, they do a decent job. However sequencing errors and longer alleles (even those that are spannable) pose significant problems and give misleading results. 
-</p>
+<p>
+The short answer is that in the easiest cases of short alleles that can be fully spanned by a single read, they do a decent job. However sequencing errors and longer alleles (even those that are spannable) pose significant problems and give misleading results. </p>
 
 <h3>Simulating reads</h3>
 
-First, I created a reference fasta file containing different Huntington's alleles (chr4:3076603-3076660 +/- 100bp):
+First, I created a reference fasta file containing different Huntington's alleles (chr4:3076603-3076660 +/- 1000bp):
 {% highlight bash %}
 >HTT_ref_19_normal
 ...(CAG)19...
@@ -52,7 +55,7 @@ wgsim \
 {% endhighlight %}
 
 <h3>Aligning with bwa mem</h3>
-Next I aligned reads using <code>bwa mem</code> (see <a href="https://github.com/lh3/bwa">https://github.com/lh3/bwa</a>). The full script is below:
+Next I aligned reads using bwa mem (see <a href="https://github.com/lh3/bwa">https://github.com/lh3/bwa</a>). The full script is below:
 {% highlight bash %}
 #!/bin/bash
 
@@ -111,6 +114,9 @@ and took snapshots of 4:3076588-3076678 (give or take). Examples are shown below
 <li><strong>High normal range (25xCAG)</strong>
 <img src="{{ SITE.URL }}/images/bwamem_htt25_err.png">
 </li>
+<li><strong>High normal range (25xCAG) shown without sequencing errors</strong>
+<img src="{{ SITE.URL }}/images/bwamem_htt25_noerr.png">
+</li>
 <li><strong>Disease allele that can be spanned by 150bp reads (40xCAG)</strong></li>
 <img src="{{ SITE.URL }}/images/bwamem_htt40_err.png">
 <li><strong>Disease allele that can't be spanned by 150bp reads (60xCAG)</strong></li>
@@ -121,7 +127,7 @@ and took snapshots of 4:3076588-3076678 (give or take). Examples are shown below
 The reference case looks good. We see reads completely spanning the 19xCAG repeat and no evidence of insertion or deletion. 25xCAG with sequencing errors looks pretty messy, but we do see evidence for a 6xCAG insertion for each read that spans the repeat region.
 </p>
 <p>
-40xCAG, which is in the full mutation range, starts to look fishy. Even though some reads completely span the repeat (repeat region is 120bp and we have 150bp reads), glancing at the alignment shows something that looks completely like the reference. Same deal for the 60xCAG repeat, which is too long for us to span, but which we would expect to show some evidence of insertion. What's going on with those?
+40xCAG, which is in the full mutation range, starts to look not as expected. Even though some reads completely span the repeat (repeat region is 120bp and we have 150bp reads), glancing at the alignment shows something that looks completely like the reference. Same deal for the 60xCAG repeat, which is too long for us to span, but which we would expect to show some evidence of insertion. What's going on with those?
 </p>
 <p>
 Taking a closer look at an example read that <em>should</em> have shown evidence of insertion:
@@ -133,7 +139,7 @@ HTT_40_full_981_1469_0:0:0_0:0:0_222	2147	18	53253385	4	60H76M14H	4	3076860	0	AG
 </p>
 Notably:
 <ul>
-<li>A read that should have spanned the repeat instead gets soft clipped, with a CIGAR of "79M71S", making it appear to match the reference. Taking a closer look at the <code>bwa mem</code> scoring suggests the answer: a tradeoff between penalties for clipping ends (5) and for gap extension (1). (although I'm not sure exactly how the clipping penalty works, e.g. is it per-bp? same for soft vs. hard?). For these cases, clipping the alignment produces a higher alignment score than including a 63bp or more insertion, and so is favored. Setting <code>-L 1000</code> results in alignments favoring the expansion (not shown). This is not something BWA is doing wrong, it is just scoring like we told it to. But whether or not this parameter is set does have implications for STR calling (see conclusion for more discussion).</li>
+<li>A read that should have spanned the repeat instead gets soft clipped, with a CIGAR of "79M71S", making it appear to match the reference. Taking a closer look at the <code>bwa mem</code> scoring suggests the answer: a tradeoff between penalties for clipping ends (5) and for gap extension (1). (although I'm not sure exactly how the clipping penalty works, e.g. is it per-bp? same for soft vs. hard?). For these cases, clipping the alignment produces a higher alignment score than including a 63bp or more insertion, and so is favored. <strong>Setting <code>-L 1000</code> results in alignments favoring the expansion (not shown).</strong> This is not something BWA is doing wrong, it is just scoring like we told it to. But whether or not this parameter is set does have implications for STR calling (see conclusion for more discussion).</li>
 <li>
 Besides the alignment of the two pairs, there is a third alignment to chromosome 18, consisting of a perfect copy of the repeat that has been hard-clipped out of the original read. The flag 2147 indicates this is a "supplementary alignment" (see <a href="http://broadinstitute.github.io/picard/explain-flags.html">explain-flags</a>), which is used to show evidence of a chimeric read but is kind of bizarre in this case. I think this alignment will be ignored by standard tools.
 </li>
@@ -195,12 +201,14 @@ Things to note:
 <li>For repeat numbers 19-40, without sequencing errors, HC actually gets it right. This should have been expected, as HC reassembles the input reads, so shouldn't be confused by all the soft clipping from bwa mem.
 </li>
 <li>In all cases samples that had sequencing errors ended up with no genotype call. I'm guessing this is because the alignments at the repeat region turned out to be too messy so the HC gave up, but will need to investigate this further.</li>
-<li>For the case of 60 repeats, which cannot be spanned by a single read, we surprisingly got a call of 40xCAG. Perhaps of all the haplotypes that HC was able to assemble and consider, this was closest. Although, it also reported 40xCAG for the case of a simulated 45xCAG expansion. Perhaps there is a max indel size being considered? <a href="http://gatkforums.broadinstitute.org/gatk/discussion/3932/haplotypecaller-and-detection-of-large-indels">this GATK forum page</a> says a rule of thumb is it can pick up indels about half the read length. I'm not sure if that means there is some strict cutoff.</li>
+<li>For the case of 60 repeats, which cannot be spanned by a single read, we surprisingly got a call of 40xCAG. Perhaps of all the haplotypes that HC was able to assemble and consider, this was closest. Although, it also reported 40xCAG for the case of a simulated 45xCAG expansion (not shown). Perhaps there is a max indel size being considered? <a href="http://gatkforums.broadinstitute.org/gatk/discussion/3932/haplotypecaller-and-detection-of-large-indels">this GATK forum page</a> says a rule of thumb is it can pick up indels about half the read length. I'm not sure if that means there is a strict cutoff.</li>
 </ul>
 
-So overall, HC was not completely insensitive to these expansions, but at least with default parameters doesn't seem promising for detecting them from real sequencing datasets.
+So overall, HC was not completely insensitive to these expansions, but at least with default parameters doesn't yet seem to be useful for detecting them from real sequencing datasets.
 
 <h3>Conclusion</h3>
-In conclusion, it seems like standard tools still aren't quite ready to accurately pick up large STR expansions, even those that can be spanned by short reads. These reads are probably an easy case, as I only simulated base mismatch errors, and made no attempt to simulate PCR stutter, the main source of noise at STRs.
+<p>In conclusion, it seems like standard tools still aren't quite ready to accurately pick up large STR expansions, even those that can be spanned by short reads. These reads are probably an easy case, as I only simulated base mismatch errors, and made no attempt to simulate PCR stutter, the main source of noise at STRs.
 
-One important point that arose from this is the tendency of bwa mem with default parameters to trim reads in favor of large insertions or deletions at repeats. Perhaps this scoring behavior makes sense at non-repeat regions, but it could make sense to use repeat-region-specific penalties that do not penalize insertions or deletions of the repeat unit. Importantly, this probably means there is a maximum insertion size that downstream callers (e.g. our <a href="lobstr.teamerlich.org">lobSTR</a>) will be strongly affected by this and should be aware of. This is likely to create a strong bias toward calls that are deletions vs. insertions from the reference, which we have actually been seeing using existing bwa mem alignments.
+<p>Note I only tested one genotyper, so perhaps others would have behaved differently and are worth trying. I also didn't show our own lobSTR's results here, but as expected we seem to be strongly biased toward calling deletions from the reference, which is exacerbated by using bwa mem alignments that have been soft clipped as input.</p>
+
+<p>One important point that arose from this is the tendency of bwa mem with default parameters to trim reads in favor of large insertions or deletions at repeats. <strong>Perhaps this scoring behavior makes sense at non-repeat regions, but it could make sense to use repeat-region-specific penalties that do not penalize insertions or deletions of the repeat unit.</strong> Importantly, this probably means there is probably a maximum insertion size that downstream callers (e.g. our <a href="lobstr.teamerlich.org">lobSTR</a>) will be strongly affected by and should be aware of. This will create a strong bias toward calls that are deletions vs. insertions from the reference, which we have actually been seeing using existing bwa mem alignments.</p>
