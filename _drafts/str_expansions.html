@@ -4,13 +4,17 @@ title: Standard tools miss STR expansions
 published: true
 tags: science
 categories: science
-date: 2016-02-10 00:00:00
+date: 2016-02-08 00:00:00
 ---
 
-<b>Summary</b>: TODO
+<b>Summary</b>: STR expansions, while theoretically possible to detect from sequencing data, are still not accurately genotyped by standard tools.
 
 <p>
-Intro TODO
+Recently we and others have made a ton of progress in tackling the bioinformatic challenge of genotyping short tandem repeats (STRs) from high throughput sequencing data (see <a href="lobstr.teamerlich.org">lobSTR</a>.) However, our and other tools are only able to genotype repeats that are short enough to be completely spanned by sequencing reads, limiting us to STRs of less than ~80-90bp, and excluding the ability to type large expansions such as those seen in Huntington's Disease or Fragile X Syndrome. Furthermore, alignment advances (bwa mem) are becoming more and more indel-sensitive, and new genotypers (e.g. GATK HaplotypeCaller) are using more sensitive local-assembly based approaches that could potentially used for genotyping long STRs. 
+
+Here I evaluate how these tools perform at a long repeat, using the Huntington's CAG repeat as an example. The hg19 reference genome has 19 copies of CAG. Under 26 repeats is considered normal, and full mutations have 40 or more repeats. Normal and low end pathogenic mutations should be spanned by short reads (here I use 150bp paired end reads to be generous). I use a range of normal, short full, and long full mutations to test how bwa mem and GATK perform at these regions.
+
+The short answer is that in the easiest cases of short alleles that can be fully spanned by a single read, they do a decent job. However sequencing errors and longer alleles (even those that are spannable) pose significant problems and give misleading results. 
 </p>
 
 <h3>Simulating reads</h3>
@@ -197,5 +201,6 @@ Things to note:
 So overall, HC was not completely insensitive to these expansions, but at least with default parameters doesn't seem promising for detecting them from real sequencing datasets.
 
 <h3>Conclusion</h3>
-soft clipping
-didn't even simulate stutter
+In conclusion, it seems like standard tools still aren't quite ready to accurately pick up large STR expansions, even those that can be spanned by short reads. These reads are probably an easy case, as I only simulated base mismatch errors, and made no attempt to simulate PCR stutter, the main source of noise at STRs.
+
+One important point that arose from this is the tendency of bwa mem with default parameters to trim reads in favor of large insertions or deletions at repeats. Perhaps this scoring behavior makes sense at non-repeat regions, but it could make sense to use repeat-region-specific penalties that do not penalize insertions or deletions of the repeat unit. Importantly, this probably means there is a maximum insertion size that downstream callers (e.g. our <a href="lobstr.teamerlich.org">lobSTR</a>) will be strongly affected by this and should be aware of. This is likely to create a strong bias toward calls that are deletions vs. insertions from the reference, which we have actually been seeing using existing bwa mem alignments.
